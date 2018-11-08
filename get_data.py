@@ -20,10 +20,7 @@ while len(events) < total:
     r = requests.post(base, data=json.dumps({"scroll_id": r.json()["meta"]["scroll"], "scroll": "1m"}))
     if "events" not in r.json():
         break
-    with open('output.json', 'w+') as f:
-        f.write(r.text)
-    # with open('output.json', 'w+') as f:
-    #     f.write(r.text)
+
     events += r.json()["events"]
     print(len(events))
 
