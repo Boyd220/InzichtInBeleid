@@ -11,16 +11,37 @@ class Lemma(object):
             'tactical': 'true'
         }
 
-    def get_lemmas(self, word):
+    def request(self, word):
         self.params['searchValue'] = word
-        r = self.s.get(url=self.url, params=self.params)
+        return self.s.get(url=self.url, params=self.params)
 
+    def get_entries(self, word):
+        r = self.request(word)
         if r.status_code == 200:
-            return [(entry['lemma'], entry['type']) for entry in r.json()["_embedded"]["exact"]]
+            return r.json()["_embedded"]["exact"]
         else:
             return []
 
+    def get_lemmas(self, word, include_type=False):
+        forms = [(entry['lemma'], entry['type']) for entry in self.get_entries(word)]
 
-if __name__ =="__main__":
+        if not include_type:
+            forms = [form[0] for form in forms]
+
+        return forms
+
+    def get_all_forms(self, word, include_type=False):
+        forms = [(form['orth'], form['type']) for entry in self.get_entries(word) for forms in entry["positions"] for
+                 form in forms["forms"]]
+
+        if not include_type:
+            forms = [form[0] for form in forms]
+
+        return forms
+
+
+if __name__ == "__main__":
     lemma = Lemma()
-    print(lemma.get_lemmas('boompje'))
+    word = 'wettelijk'
+    print(lemma.get_lemmas(word))
+    print(lemma.get_all_forms(word))
