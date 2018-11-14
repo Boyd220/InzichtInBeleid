@@ -3,10 +3,18 @@ import json
 import pickle
 import pandas as pd
 
-with open ('C:/Users/Kraan/Desktop/ori.json', 'rb') as file:
-    ori_events = json.load(file)
-with open ('C:/Users/Kraan/Desktop/TKS.json', 'rb') as file:
-    tks_events = json.load(file)
+try:
+    with open ('C:/Users/Kraan/Desktop/ori.json', 'rb') as file:
+        ori_events = json.load(file)
+except:
+    with open ('C:/Users/Jaap/Git/ORI/ori.json', 'rb') as file:
+        ori_events = json.load(file)
+try:
+    with open ('C:/Users/Kraan/Desktop/TKS.json', 'rb') as file:
+        tks_events = json.load(file)
+except:
+    with open ('C:/Users/Jaap/Git/ORI/TKS.json', 'rb') as file:
+        tks_events = json.load(file)
 
 df_ori = pd.DataFrame(columns=['event','doc','score'])
 
@@ -40,3 +48,6 @@ for i in range(len(tks_events)):
 
 for key in df_tks:
     df_tks[key]=pd.to_numeric(df_tks[key])
+
+
+

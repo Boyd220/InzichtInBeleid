@@ -21,6 +21,30 @@ while len(events) < total:
     events += r.json()["events"]
     print(len(events))
 
-print(len(events))
-with open("C:/Users/Kraan/Git/ORI/nieuwkoop", "wb") as f:
-    pickle.dump(events, f)
+data={}
+i=0
+for event in events:
+    if 'sources' in ori_events[i]:
+        for source in event['sources']:
+            data[source['url']]={'document':source['description'],
+                           'summary':source['note'],
+                           'masterID':event['id'],
+                           'place':event['organization']['id'],
+                           'date':event['start_date'],
+                           'author':'unknown'}
+        i+=1
+        if i>10:
+            break
+
+
+try:
+    with open("C:/Users/Kraan/Git/ORI/ori.json", "wb") as f:
+        json.dump(data, f)      
+    with open("C:/Users/Kraan/Git/ORI/nieuwkoop", "wb") as f:
+        pickle.dump(events, f)
+except:
+    with open("C:/Users/Jaap/Git/ORI/ori.json", "w") as f:
+        json.dump(data, f)      
+    with open("C:/Users/Jaap/Git/ORI/nieuwkoop", "wb") as f:
+        pickle.dump(events, f)
+    
