@@ -36,15 +36,13 @@ for event in events:
         if i>10:
             break
 
-
 try:
     with open("C:/Users/Kraan/Git/ORI/ori.json", "wb") as f:
-        json.dump(data, f)      
+        json.dump(data, f)
     with open("C:/Users/Kraan/Git/ORI/nieuwkoop", "wb") as f:
         pickle.dump(events, f)
 except:
     with open("C:/Users/Jaap/Git/ORI/ori.json", "w") as f:
-        json.dump(data, f)      
+        json.dump(data, f)
     with open("C:/Users/Jaap/Git/ORI/nieuwkoop", "wb") as f:
         pickle.dump(events, f)
-    
