@@ -21,23 +21,24 @@ while len(events) < total:
     events += r.json()["events"]
     print(len(events))
 
-data={}
+data=[]
 i=0
 for event in events:
-    if 'sources' in ori_events[i]:
+    if 'sources' in events[i]:
         for source in event['sources']:
-            data[source['url']]={'document':source['description'],
+            data.append({'id':source['url'],
+                           'document':source['description'],
                            'summary':source['note'],
                            'masterID':event['id'],
                            'place':event['organization']['id'],
                            'date':event['start_date'],
-                           'author':'unknown'}
+                           'author':'unknown'})
         i+=1
         if i>10:
             break
-
+        
 try:
-    with open("C:/Users/Kraan/Git/ORI/ori.json", "wb") as f:
+    with open("C:/Users/Kraan/Git/ORI/ori.json", "w") as f:
         json.dump(data, f)
     with open("C:/Users/Kraan/Git/ORI/nieuwkoop", "wb") as f:
         pickle.dump(events, f)
