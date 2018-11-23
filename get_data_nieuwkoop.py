@@ -1,7 +1,7 @@
 import requests
 import json
-import pickle
 
+#ORI API variables
 base = 'http://api.openraadsinformatie.nl/v0/search/events'
 query = {"query": "",
          "filters": {"organization_id": {
@@ -10,9 +10,9 @@ query = {"query": "",
          "scroll": "5m"}
 r = requests.post(base, data=json.dumps(query))
 events = r.json()["events"]
-print(len(events))
 total = r.json()["meta"]["total"]
 
+#Loop through ORI API
 while len(events) < total:
     # query["scroll_id"] = r.json()["meta"]["scroll"]
     r = requests.post(base, data=json.dumps({"scroll_id": r.json()["meta"]["scroll"], "scroll": "1m"}))
@@ -21,29 +21,59 @@ while len(events) < total:
     events += r.json()["events"]
     print(len(events))
 
-data=[]
+#Get data in right format   
+ori_data=[]
 i=0
 for event in events:
-    if 'sources' in events[i]:
+    if 'sources' in event:
         for source in event['sources']:
-            data.append({'id':source['url'],
-                           'document':source['description'],
-                           'summary':source['note'],
-                           'masterID':event['id'],
-                           'place':event['organization']['id'],
-                           'date':event['start_date'],
-                           'author':'unknown'})
+            ori_data.append({'id':source['url'],
+                         'document':source['description'],
+                         'summary':source['note'],
+                         'masterID':event['id'],
+                         'place':event['organization']['id'],
+                         'date':event['start_date'],
+                         'author':'unknown'})
         i+=1
         if i>10:
             break
-        
+
+#import tks data
+with open ('C:/Users/Kraan/Desktop/TKS.json', 'rb') as file:
+    tkv_events = json.load(file)
+
+#get data in right format
+tkv_data=[]
+i=0
+for event in tkv_events:
+    if type(event['Bestanden']) == str:
+        document=event['Bestanden']
+    elif type(event['Bestanden']) == list:
+        if len(event['Bestanden'])==1:
+            document=event['Bestanden'][0]
+        else:
+            document=''
+            for doc in event['Bestanden']:
+                document+=doc
+    tkv_data.append({'id':event['id'],
+                     'document':document,
+                     'summary':event['Titel'],
+                     'masterID':event['id'],
+                     'place':'TK',
+                     'date':event['Publicatiedatum'],
+                     'author':event['Indiener']})  
+    i+=1
+    if i>20:
+        break
+
+total_data=[]
+total_data.extend(ori_data)
+total_data.extend(tkv_data)
+
+#save data
 try:
-    with open("C:/Users/Kraan/Git/ORI/ori.json", "w") as f:
-        json.dump(data, f)
-    with open("C:/Users/Kraan/Git/ORI/nieuwkoop", "wb") as f:
-        pickle.dump(events, f)
+    with open("C:/Users/Kraan/Git/ORI/total.json", "w") as f:
+        json.dump(total_data, f)
 except:
-    with open("C:/Users/Jaap/Git/ORI/ori.json", "w") as f:
-        json.dump(data, f)
-    with open("C:/Users/Jaap/Git/ORI/nieuwkoop", "wb") as f:
-        pickle.dump(events, f)
+    with open("C:/Users/Kraan/Git/ORI/total.json", "w") as f:
+        json.dump(total_data, f)
