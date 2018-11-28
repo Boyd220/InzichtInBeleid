@@ -14,14 +14,15 @@ def count_words(wordslist,sourcedict,countfield):
         temp+=sourcedict[countfield].str.count(term)
     return temp
 
-gaswords=['gaslo','gasvrij','nul op de meter','energieneutraal','energietransitie']
-woonwords=['woon','wonen','woning','huis','appartement']
+def get_searchmatrix(searchword):
+    if searchword=='gas':
+        searchterms=['gaslo','gasvrij','nul op de meter','energieneutraal','energietransitie']
+    elif searchword=='wonen':
+        searchterms=['woon','wonen','woning','huis','appartement']
+    return searchterms
 
 def get_selection(searchword):
-    if searchword=='gas':
-        searchterms=gaswords
-    elif searchword=='wonen':
-        searchterms=woonwords
+    searchterms=get_searchmatrix(searchword)
     events=get_data()
     events['count'] = count_words(wordslist=searchterms,sourcedict=events,countfield='document')
     events['count_summary'] = count_words(wordslist=searchterms,sourcedict=events,countfield='summary')
