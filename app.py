@@ -6,7 +6,7 @@ import pandas as pd
 from ORI_BZK import get_selection,get_searchmatrix
 from dash.dependencies import Output, Input, State
 
-df = pd.read_json('C:/Users/Kraan/Git/ORI/total.json', orient='records')
+df = pd.read_json('C:/Users/Jaap/Git/ORI/total.json', orient='records')
 
 app = dash.Dash()
 colors = {
@@ -54,10 +54,17 @@ app.layout = html.Div(style={'backgroundColor': colors['background']},
                     id='tabgraph',
                     figure={
                         'data': [{
-                            'x': [1, 2, 3],
-                            'y': [3, 1, 2],
-                            'type': 'line'
-                        }]
+                                'x': [1, 2, 3, 4],
+                                'y': [4, 1, 3, 5],
+                                'name': 'TK',
+                                'mode': 'markers',
+                            },{
+                                'x': [1, 2, 3, 4],
+                                'y': [9, 4, 1, 4],
+                                'name': 'Gemeente',
+                                'mode': 'markers',
+                            }
+                        ]
                     }
                 )
             ])
@@ -78,16 +85,15 @@ def update_output(n_clicks,tabvalue,searchvalue):
     Output('tabgraph', 'figure'),
     [Input('table', 'data')])
 def update_graph(data):
-    #data = list of dicts
-    print(type(data))
-    print(data)
-    print(data["date"].value_counts())
+    df=pd.DataFrame(data)
+    df=df["date"].value_counts()
+    df=df.sort_index()
     print('test')
     return{'data': [{
         #'x': data["date"].value_counts().index.tolist(),
-        'x': [1,2,3,4],
-        'y': data["date"].value_counts().tolist(),
-        'type': 'line'
+        'x': df.index.tolist(),
+        'y': df.tolist(),
+        'type': 'scatter'
     }]}
 
 @app.callback(Output('textbox', 'children'),

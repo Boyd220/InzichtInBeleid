@@ -28,5 +28,4 @@ def get_selection(searchword):
     events['count_summary'] = count_words(wordslist=searchterms,sourcedict=events,countfield='summary')
     events=events.sort_values(by=['count_summary', 'count'],ascending=False)
     results=events[(events['count']>0) | (events['count_summary']>0)]
-    print(len(results))
     return(results)

@@ -22,44 +22,71 @@ while len(events) < total:
     events += r.json()["events"]
     print(len(events))
 
-#Get data in right format   
+#Get data in right format
 ori_data=[]
 i=0
 for event in events:
     if 'sources' in event:
-        for source in event['sources']:
-            ori_data.append({'id':source['url'],
-                         'document':source['description'],
-                         'summary':source['note'],
-                         'masterID':event['id'],
-                         'place':event['organization']['id'],
-                         'date':datetime.date(datetime.strptime(event['start_date'][:19], '%Y-%m-%dT%H:%M:%S')).strftime('%d-%m-%Y'),
-                         'author':'unknown'})
-        i+=1
+        masterid=event['id']
+        place=event['organization']['id']
+        try:date=event['start_date'] 
+        except:date=event['meta']['processing_started']
+        date=datetime.date(datetime.strptime(date[:19], '%Y-%m-%dT%H:%M:%S')).strftime('%d-%m-%Y')
+        author='unknown'
+        if event['classification']=='Moties':
+            localid=masterid
+            document=event['sources'][0]['description']
+            try:summary=event['sources'][0]['note']
+            except:summary=event['sources'][0]['notes']
+            ori_data.append({'id':localid,
+                             'document':document,
+                             'summary':summary,
+                             'masterID':masterid,
+                             'place':place,
+                             'date':date,
+                             'author':author})
+        else:
+            for source in event['sources']:
+                localid=source['url']
+                document=source['description']
+                try:summary=source['note']
+                except:summary=source['notes']
+                ori_data.append({'id':localid,
+                             'document':document,
+                             'summary':summary,
+                             'masterID':masterid,
+                             'place':place,
+                             'date':date,
+                             'author':author})
+        #i+=1
         if i>10:
             break
 
 
 def replacemonth(string):
-    for r in (("januari", "January"), 
-          ("februari", "February"), 
-          ("maart", "March"), 
-          ("april", "April"), 
-          ("mei", "May"), 
-          ("juni", "June"), 
-          ("juli", "July"), 
-          ("augustus", "August"), 
-          ("september", "September"), 
-          ("oktober", "October"), 
-          ("november", "November"), 
+    for r in (("januari", "January"),
+          ("februari", "February"),
+          ("maart", "March"),
+          ("april", "April"),
+          ("mei", "May"),
+          ("juni", "June"),
+          ("juli", "July"),
+          ("augustus", "August"),
+          ("september", "September"),
+          ("oktober", "October"),
+          ("november", "November"),
           ("december", "December")):
         string = string.replace(*r)
     return string
-    
-    
+
+
 #import tks data
-with open ('C:/Users/Jaap/git/ORI/TKS.json', 'rb') as file:
-    tkv_events = json.load(file)
+try:
+    with open ('C:/Users/Kraan/git/ORI/TKS.json', 'rb') as file:
+        tkv_events = json.load(file)
+except:
+    with open("C:/Users/Jaap/Git/ORI/TKS.json", "rb") as file:
+        tkv_events = json.load(file)
 
 #get data in right format
 tkv_data=[]
@@ -80,8 +107,8 @@ for event in tkv_events:
                      'masterID':event['id'],
                      'place':'TK',
                      'date':datetime.date(datetime.strptime(replacemonth(event['Publicatiedatum']), '%d %B %Y')).strftime('%d-%m-%Y'),
-                     'author':event['Indiener']})  
-    i+=1
+                     'author':event['Indiener']})
+    #i+=1
     if i>20:
         break
 
@@ -94,5 +121,5 @@ try:
     with open("C:/Users/Kraan/Git/ORI/total.json", "w") as f:
         json.dump(total_data, f)
 except:
-    with open("C:/Users/Kraan/Git/ORI/total.json", "w") as f:
+    with open("C:/Users/Jaap/Git/ORI/total.json", "w") as f:
         json.dump(total_data, f)
