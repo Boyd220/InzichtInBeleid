@@ -1,5 +1,6 @@
 import requests
 import json
+from datetime import datetime
 
 #ORI API variables
 base = 'http://api.openraadsinformatie.nl/v0/search/events'
@@ -32,14 +33,32 @@ for event in events:
                          'summary':source['note'],
                          'masterID':event['id'],
                          'place':event['organization']['id'],
-                         'date':event['start_date'],
+                         'date':datetime.date(datetime.strptime(event['start_date'][:19], '%Y-%m-%dT%H:%M:%S')).strftime('%d-%m-%Y'),
                          'author':'unknown'})
         i+=1
         if i>10:
             break
 
+
+def replacemonth(string):
+    for r in (("januari", "January"), 
+          ("februari", "February"), 
+          ("maart", "March"), 
+          ("april", "April"), 
+          ("mei", "May"), 
+          ("juni", "June"), 
+          ("juli", "July"), 
+          ("augustus", "August"), 
+          ("september", "September"), 
+          ("oktober", "October"), 
+          ("november", "November"), 
+          ("december", "December")):
+        string = string.replace(*r)
+    return string
+    
+    
 #import tks data
-with open ('C:/Users/Kraan/Desktop/TKS.json', 'rb') as file:
+with open ('C:/Users/Jaap/git/ORI/TKS.json', 'rb') as file:
     tkv_events = json.load(file)
 
 #get data in right format
@@ -60,7 +79,7 @@ for event in tkv_events:
                      'summary':event['Titel'],
                      'masterID':event['id'],
                      'place':'TK',
-                     'date':event['Publicatiedatum'],
+                     'date':datetime.date(datetime.strptime(replacemonth(event['Publicatiedatum']), '%d %B %Y')).strftime('%d-%m-%Y'),
                      'author':event['Indiener']})  
     i+=1
     if i>20:
