@@ -3,10 +3,16 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
 import pandas as pd
-from ORI_BZK import get_selection,get_searchmatrix
+from ORI_BZK import get_selection, get_searchmatrix
 from dash.dependencies import Output, Input, State
 
-df = pd.read_json('C:/Users/Jaap/Git/ORI/total.json', orient='records')
+df = pd.read_json('C:/Users/Kraan/Git/ORI/total.json', orient='records')
+
+
+def getvaluecounts(df, field):
+    df = df[field].value_counts()
+    return(df.sort_index())
+
 
 app = dash.Dash()
 colors = {
@@ -17,34 +23,35 @@ markdown_text = '''
 Select a **single** row to see the details
 '''
 app.layout = html.Div(style={'backgroundColor': colors['background']},
-    children=[
+    children = [
         html.H1(
-            children='Keteninformatie',
+            children = 'Keteninformatie',
             style={
                 'textAlign': 'center',
                 'color': colors['text']
             }
         ),
-        html.Div(id='textfield',children='POC. Tool voor inzicht in beleid', style={
-            'textAlign': 'center',
-            'color': colors['text']
+        html.Div(id='textfield', children='POC. Tool voor inzicht in beleid',
+        style={
+                'textAlign': 'center',
+                'color': colors['text']
         }),
-        dcc.Input(placeholder='Enter a value...',id='input-box', type='text'),
+        dcc.Input(placeholder='Enter a value...', id='input-box', type='text'),
         html.Button('Zoek', id='button'),
-        dcc.Tabs(id="tabs", value='tab-1',children=[
+        dcc.Tabs(id="tabs", value='tab-1', children=[
             dcc.Tab(label='Tab one', value='tab-1', children=[
                 html.Div(children=[
                     dash_table.DataTable(
                         id='table',
                         columns=[{"name": i, "id": i} for i in ['author','date','place','summary']],
-                        #data=df.to_dict("rows"),
+                        # data=df.to_dict("rows"),
                         row_selectable=True,
                     ),
                     html.Div(id='textbox', children=dcc.Markdown(children=markdown_text),
                         style={
                             'textAlign': 'left',
                             'backgroundColor': 'white',
-                            'width': 800,'height':400
+                            'width': 800, 'height':400
                         }
                     )
                 ])
@@ -58,7 +65,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background']},
                                 'y': [4, 1, 3, 5],
                                 'name': 'TK',
                                 'mode': 'markers',
-                            },{
+                            }, {
                                 'x': [1, 2, 3, 4],
                                 'y': [9, 4, 1, 4],
                                 'name': 'Gemeente',
@@ -71,30 +78,38 @@ app.layout = html.Div(style={'backgroundColor': colors['background']},
         ])
 ])
 
+
 @app.callback(
     Output('table', 'data'),
     [Input('button', 'n_clicks'),
     Input('tabs', 'value')],
     [State('input-box', 'value')])
-def update_output(n_clicks,tabvalue,searchvalue):
-    if searchvalue!=None:
-        table_data=get_selection(searchvalue)
-        return table_data.to_dict("rows")
+def update_output(n_clicks, abvalue, searchvalue):
+    if searchvalue is not None:
+        table_data = get_selection(searchvalue)
+        return table_data.head(10).to_dict("rows")
+
 
 @app.callback(
     Output('tabgraph', 'figure'),
     [Input('table', 'data')])
 def update_graph(data):
-    df=pd.DataFrame(data)
-    df=df["date"].value_counts()
-    df=df.sort_index()
+    df = pd.DataFrame(data)
+    dfTK = getvaluecounts(df=df.loc[df['place'] == 'TK'], field='date')
+    dfOt = getvaluecounts(df=df.loc[df['place'] != 'TK'], field='date')
     print('test')
     return{'data': [{
-        #'x': data["date"].value_counts().index.tolist(),
-        'x': df.index.tolist(),
-        'y': df.tolist(),
-        'type': 'scatter'
-    }]}
+            'x': dfTK.index.tolist(),
+            'y': dfTK.tolist(),
+            'name': 'TK',
+            'mode': 'markers',
+        }, {
+                'x': dfOt.index.tolist(),
+                'y': dfOt.tolist(),
+                'name': 'Gemeente',
+                'mode': 'markers',
+        }]}
+
 
 @app.callback(Output('textbox', 'children'),
               [Input('table', 'selected_rows'),
@@ -115,6 +130,7 @@ def query_button_clicked(selected_row_indices, rows, value):
         value = 'Select a single row to see the details'
     value=''''''+value+''''''
     return dcc.Markdown(children=value)
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)
