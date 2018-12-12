@@ -6,7 +6,7 @@ import pandas as pd
 from ORI_BZK import get_selection, get_searchmatrix
 from dash.dependencies import Output, Input, State
 
-df = pd.read_json('C:/Users/Kraan/Git/ORI/total_dh.json', orient='records')
+df = pd.read_json('C:/Users/Kraan/Git/ORI/total.json', orient='records')
 df = df.loc[df['date']>='2016-01-01']
 
 def getvaluecounts(df, field):
@@ -41,19 +41,43 @@ app.layout = html.Div(style={'backgroundColor': colors['background']},
         dcc.Tabs(id="tabs", value='tab-1', children=[
             dcc.Tab(label='Tab one', value='tab-1', children=[
                 html.Div(children=[
-                    dash_table.DataTable(
-                        id='table',
-                        columns=[{"name": i, "id": i} for i in ['author','date','place','summary']],
-                        # data=df.to_dict("rows"),
-                        row_selectable=True,
-                    ),
                     html.Div(id='textbox', children=dcc.Markdown(children=markdown_text),
-                        style={
+                        style= {
                             'textAlign': 'left',
                             'backgroundColor': 'white',
-                            'width': 800, 'height':400
+                            'width': '40%',
+                            'display': 'inline-block'
                         }
-                    )
+                    ),
+                    html.Div(
+                        dash_table.DataTable(
+                            id='table',
+                            columns=[{"name": i, "id": i} for i in ['author','date','place','summary']],
+                            # data=df.to_dict("rows"),
+                            row_selectable=True,
+                            n_fixed_rows=1,
+                            style_table={
+                                'maxHeight': '300',
+                                'overflowY': 'scroll'
+                            },
+                            style_cell={
+                                'minWidth': '30px', 'maxWidth': '500px',
+                                'whiteSpace': 'no-wrap',
+                                'overflow': 'hidden',
+                                'textOverflow': 'ellipsis',
+                            },
+                            css=[{
+                                'selector': '.dash-cell div.dash-cell-value',
+                                'rule': 'display: inline; white-space: inherit; overflow: inherit; text-overflow: inherit;'
+                            }],
+                            style_cell_conditional=[
+                                {'if': {'column_id': 'author'},
+                                 'width': '100px'},
+                                {'if': {'column_id': 'summary'},
+                                 'width': '400px'},
+                            ]
+                        ),
+                    style= {'width': '60%', 'display': 'inline-block', 'vertical-align': 'top'} )
                 ])
             ]),
             dcc.Tab(label='Tab two', value='tab-2', children=[
@@ -75,7 +99,8 @@ app.layout = html.Div(style={'backgroundColor': colors['background']},
                             ]
                         }
                     )
-                ])
+                ],
+                style={'display': 'inline-block'})
             ])
         ])
 ])
@@ -88,7 +113,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background']},
     [State('input-box', 'value')])
 def update_output(n_clicks, abvalue, searchvalue):
     if searchvalue is not None:
-        table_data = get_selection(df,searchvalue)
+        table_data = get_selection(df, searchvalue)
         return table_data.to_dict("rows")
 
 
@@ -100,6 +125,7 @@ def update_graph(data):
     dfTK = getvaluecounts(df=df.loc[df['place'] == 'TK'], field='date')
     dfOt = getvaluecounts(df=df.loc[df['place'] != 'TK'], field='date')
     print('test')
+    print( dfTK.index.tolist())
     return{'data': [{
             'x': dfTK.index.tolist(),
             'y': dfTK.tolist(),
@@ -119,7 +145,7 @@ def update_graph(data):
                [State('input-box', 'value')])
 def query_button_clicked(selected_row_indices, rows, value):
     """ Callback to retrieve the state population and output to the textbox. """
-    if selected_row_indices==None:
+    if selected_row_indices == None:
         value = 'Select a single row to see the details'
     elif len(selected_row_indices) == 1:
         row_idx = selected_row_indices[0]
@@ -130,7 +156,7 @@ def query_button_clicked(selected_row_indices, rows, value):
         value = text
     else:
         value = 'Select a single row to see the details'
-    value=''''''+value+''''''
+    value='''''' + value + ''''''
     return dcc.Markdown(children=value)
 
 
