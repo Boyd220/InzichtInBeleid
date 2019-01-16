@@ -1,13 +1,13 @@
 import pandas as pd
 import numpy as np
 import time
-
+"""Set of functions to use in application"""
 
 def get_data():
     try:
-        events = pd.read_json('C:/Users/Kraan/Git/ORI/total_dh.json', orient='records')
+        events = pd.read_json('total_dh.json', orient='records')
     except:
-        events = pd.read_json('C:/Users/Jaap/Git/ORI/total.json', orient='records')
+        events = pd.read_json('total.json', orient='records')
     return(events)
 
 

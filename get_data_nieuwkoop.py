@@ -24,12 +24,12 @@ while len(events) < total:
 
 #Get data in right format
 ori_data=[]
-i=0
 for event in events:
     if 'sources' in event:
         masterid=event['id']
-        place=event['organization']['id']
-        try:date=event['start_date'] 
+        try:place=event['organization']['id']
+        except:place=event['meta']['collection']
+        try:date=event['start_date']
         except:date=event['meta']['processing_started']
         date=datetime.date(datetime.strptime(date[:19], '%Y-%m-%dT%H:%M:%S')).strftime('%d-%m-%Y')
         author='unknown'
@@ -58,10 +58,6 @@ for event in events:
                              'place':place,
                              'date':date,
                              'author':author})
-        #i+=1
-        if i>10:
-            break
-
 
 def replacemonth(string):
     for r in (("januari", "January"),
@@ -79,18 +75,12 @@ def replacemonth(string):
         string = string.replace(*r)
     return string
 
-
 #import tks data
-try:
-    with open ('C:/Users/Kraan/git/ORI/TKS.json', 'rb') as file:
-        tkv_events = json.load(file)
-except:
-    with open("C:/Users/Jaap/Git/ORI/TKS.json", "rb") as file:
-        tkv_events = json.load(file)
+with open ('TKS.json', 'rb') as file:
+    tkv_events = json.load(file)
 
 #get data in right format
 tkv_data=[]
-i=0
 for event in tkv_events:
     if type(event['Bestanden']) == str:
         document=event['Bestanden']
@@ -108,18 +98,11 @@ for event in tkv_events:
                      'place':'TK',
                      'date':datetime.date(datetime.strptime(replacemonth(event['Publicatiedatum']), '%d %B %Y')).strftime('%d-%m-%Y'),
                      'author':event['Indiener']})
-    #i+=1
-    if i>20:
-        break
 
 total_data=[]
 total_data.extend(ori_data)
 total_data.extend(tkv_data)
 
 #save data
-try:
-    with open("C:/Users/Kraan/Git/ORI/total.json", "w") as f:
-        json.dump(total_data, f)
-except:
-    with open("C:/Users/Jaap/Git/ORI/total.json", "w") as f:
-        json.dump(total_data, f)
+with open("total.json", "w") as f:
+    json.dump(total_data, f)

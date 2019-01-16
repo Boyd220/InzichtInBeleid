@@ -1,5 +1,5 @@
 import requests
-
+"""Way to get stem, to find different ways to write a word"""
 
 class Lemma(object):
     def __init__(self):
@@ -42,6 +42,6 @@ class Lemma(object):
 
 if __name__ == "__main__":
     lemma = Lemma()
-    word = 'wettelijk'
+    word = 'wetten'
     print(lemma.get_lemmas(word))
     print(lemma.get_all_forms(word))

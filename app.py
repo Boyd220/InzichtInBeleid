@@ -6,10 +6,12 @@ import pandas as pd
 from ORI_BZK import get_selection, get_searchmatrix
 from dash.dependencies import Output, Input, State
 
-df = pd.read_json('C:/Users/Kraan/Git/ORI/total_dh.json', orient='records')
+#load data and filter for recent data
+df = pd.read_json('total.json', orient='records')
 df = df.loc[df['date']>='2016-01-01']
 
 def getvaluecounts(df, field):
+    """function to count al occurences of values in field of df."""
     df = df[field].value_counts()
     return(df.sort_index())
 
@@ -23,9 +25,9 @@ markdown_text = '''
 Select a **single** row to see the details
 '''
 app.layout = html.Div(style={'backgroundColor': colors['background']},
-    children = [
+    children=[
         html.H1(
-            children = 'Keteninformatie',
+            children='Keteninformatie',
             style={
                 'textAlign': 'center',
                 'color': colors['text']
@@ -41,19 +43,43 @@ app.layout = html.Div(style={'backgroundColor': colors['background']},
         dcc.Tabs(id="tabs", value='tab-1', children=[
             dcc.Tab(label='Tab one', value='tab-1', children=[
                 html.Div(children=[
-                    dash_table.DataTable(
-                        id='table',
-                        columns=[{"name": i, "id": i} for i in ['author','date','place','summary']],
-                        # data=df.to_dict("rows"),
-                        row_selectable=True
-                    ),
                     html.Div(id='textbox', children=dcc.Markdown(children=markdown_text),
                         style={
                             'textAlign': 'left',
                             'backgroundColor': 'white',
-                            'width': 800, 'height':400
+                            'width': '40%',
+                            'display': 'inline-block'
                         }
-                    )
+                    ),
+                    html.Div(
+                        dash_table.DataTable(
+                            id='table',
+                            columns=[{"name": i, "id": i} for i in ['author','date','place','summary']],
+                            # data=df.to_dict("rows"),
+                            row_selectable=True,
+                            n_fixed_rows=1,
+                            style_table={
+                                'maxHeight': '300',
+                                'overflowY': 'scroll'
+                            },
+                            style_cell={
+                                'minWidth': '30px', 'maxWidth': '500px',
+                                'whiteSpace': 'no-wrap',
+                                'overflow': 'hidden',
+                                'textOverflow': 'ellipsis',
+                            },
+                            css=[{
+                                'selector': '.dash-cell div.dash-cell-value',
+                                'rule': 'display: inline; white-space: inherit; overflow: inherit; text-overflow: inherit;'
+                            }],
+                            style_cell_conditional=[
+                                {'if': {'column_id': 'author'},
+                                 'width': '100px'},
+                                {'if': {'column_id': 'summary'},
+                                 'width': '400px'},
+                            ]
+                        ),
+                    style={'width': '60%', 'display': 'inline-block', 'vertical-align': 'top'} )
                 ])
             ]),
             dcc.Tab(label='Tab two', value='tab-2', children=[
@@ -75,7 +101,8 @@ app.layout = html.Div(style={'backgroundColor': colors['background']},
                             ]
                         }
                     )
-                ])
+                ],
+                )
             ])
         ])
 ])
@@ -84,11 +111,12 @@ app.layout = html.Div(style={'backgroundColor': colors['background']},
 @app.callback(
     Output('table', 'data'),
     [Input('button', 'n_clicks'),
-    Input('tabs', 'value')],
+     Input('tabs', 'value')],
     [State('input-box', 'value')])
 def update_output(n_clicks, abvalue, searchvalue):
+    """ Callback to fill table with searchresults. """
     if searchvalue is not None:
-        table_data = get_selection(df,searchvalue)
+        table_data = get_selection(df, searchvalue)
         return table_data.to_dict("rows")
 
 
@@ -96,14 +124,12 @@ def update_output(n_clicks, abvalue, searchvalue):
     Output('tabgraph', 'figure'),
     [Input('table', 'data')])
 def update_graph(data):
+    """ Callback to fill graph with data from table. """
     df = pd.DataFrame(data)
     dfTK = getvaluecounts(df=df.loc[df['place'] == 'TK'], field='date')
     dfOt = getvaluecounts(df=df.loc[df['place'] != 'TK'], field='date')
     print('test')
-    print('lengte= '+str(len(df.loc[df['place'] == 'TK'])))
-    print(dfTK.tolist())
-    print(dfOt.index.tolist())
-    print(dfOt.tolist())
+    print(dfTK.index.tolist())
     return{'data': [{
             'x': dfTK.index.tolist(),
             'y': dfTK.tolist(),
@@ -122,8 +148,8 @@ def update_graph(data):
                Input('table', 'data')],
                [State('input-box', 'value')])
 def query_button_clicked(selected_row_indices, rows, value):
-    """ Callback to retrieve the state population and output to the textbox. """
-    if selected_row_indices==None:
+    """ Callback to retrieve the selected document and output to the textbox. """
+    if selected_row_indices is None:
         value = 'Select a single row to see the details'
     elif len(selected_row_indices) == 1:
         row_idx = selected_row_indices[0]
@@ -133,8 +159,8 @@ def query_button_clicked(selected_row_indices, rows, value):
         text = text.replace('\n', '\n\n')
         value = text
     else:
-        value = 'Select a single row to see the details'
-    value=''''''+value+''''''
+        value = 'Select a **single** row to see the details'
+    value = '''''' + value + ''''''
     return dcc.Markdown(children=value)
 
 
