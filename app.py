@@ -45,7 +45,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background']},
                         id='table',
                         columns=[{"name": i, "id": i} for i in ['author','date','place','summary']],
                         # data=df.to_dict("rows"),
-                        row_selectable=True,
+                        row_selectable=True
                     ),
                     html.Div(id='textbox', children=dcc.Markdown(children=markdown_text),
                         style={
@@ -100,6 +100,10 @@ def update_graph(data):
     dfTK = getvaluecounts(df=df.loc[df['place'] == 'TK'], field='date')
     dfOt = getvaluecounts(df=df.loc[df['place'] != 'TK'], field='date')
     print('test')
+    print('lengte= '+str(len(df.loc[df['place'] == 'TK'])))
+    print(dfTK.tolist())
+    print(dfOt.index.tolist())
+    print(dfOt.tolist())
     return{'data': [{
             'x': dfTK.index.tolist(),
             'y': dfTK.tolist(),

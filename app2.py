@@ -23,9 +23,9 @@ markdown_text = '''
 Select a **single** row to see the details
 '''
 app.layout = html.Div(style={'backgroundColor': colors['background']},
-    children = [
+    children=[
         html.H1(
-            children = 'Keteninformatie',
+            children='Keteninformatie',
             style={
                 'textAlign': 'center',
                 'color': colors['text']
@@ -42,7 +42,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background']},
             dcc.Tab(label='Tab one', value='tab-1', children=[
                 html.Div(children=[
                     html.Div(id='textbox', children=dcc.Markdown(children=markdown_text),
-                        style= {
+                        style={
                             'textAlign': 'left',
                             'backgroundColor': 'white',
                             'width': '40%',
@@ -77,7 +77,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background']},
                                  'width': '400px'},
                             ]
                         ),
-                    style= {'width': '60%', 'display': 'inline-block', 'vertical-align': 'top'} )
+                    style={'width': '60%', 'display': 'inline-block', 'vertical-align': 'top'} )
                 ])
             ]),
             dcc.Tab(label='Tab two', value='tab-2', children=[
@@ -100,7 +100,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background']},
                         }
                     )
                 ],
-                style={'display': 'inline-block'})
+                )
             ])
         ])
 ])
@@ -109,7 +109,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background']},
 @app.callback(
     Output('table', 'data'),
     [Input('button', 'n_clicks'),
-    Input('tabs', 'value')],
+     Input('tabs', 'value')],
     [State('input-box', 'value')])
 def update_output(n_clicks, abvalue, searchvalue):
     if searchvalue is not None:
@@ -125,7 +125,7 @@ def update_graph(data):
     dfTK = getvaluecounts(df=df.loc[df['place'] == 'TK'], field='date')
     dfOt = getvaluecounts(df=df.loc[df['place'] != 'TK'], field='date')
     print('test')
-    print( dfTK.index.tolist())
+    print(dfTK.index.tolist())
     return{'data': [{
             'x': dfTK.index.tolist(),
             'y': dfTK.tolist(),
@@ -145,7 +145,7 @@ def update_graph(data):
                [State('input-box', 'value')])
 def query_button_clicked(selected_row_indices, rows, value):
     """ Callback to retrieve the state population and output to the textbox. """
-    if selected_row_indices == None:
+    if selected_row_indices is None:
         value = 'Select a single row to see the details'
     elif len(selected_row_indices) == 1:
         row_idx = selected_row_indices[0]
@@ -156,7 +156,7 @@ def query_button_clicked(selected_row_indices, rows, value):
         value = text
     else:
         value = 'Select a single row to see the details'
-    value='''''' + value + ''''''
+    value = '''''' + value + ''''''
     return dcc.Markdown(children=value)
 
 
