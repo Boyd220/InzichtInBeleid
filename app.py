@@ -3,8 +3,10 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
 import pandas as pd
-from ORI_BZK import get_selection, get_searchmatrix
+from ORI_BZK import get_selection, get_searchmatrix, have_internet
 from dash.dependencies import Output, Input, State
+
+
 
 #load data and filter for recent data
 df = pd.read_json('total.json', orient='records')
@@ -17,6 +19,13 @@ def getvaluecounts(df, field):
 
 
 app = dash.Dash()
+if have_internet() is False:
+    app.css.config.serve_locally = True
+    app.scripts.config.serve_locally = True
+else:
+    app.css.config.serve_locally = False
+    app.scripts.config.serve_locally = False
+
 colors = {
     'background': '#111111',
     'text': '#7FDBFF'
