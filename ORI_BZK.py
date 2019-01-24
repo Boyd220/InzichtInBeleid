@@ -30,14 +30,18 @@ def get_searchmatrix(searchword):
 
 
 def get_selection(events, searchword):
-    tm = time.time()
-    searchterms = get_searchmatrix(searchword)
-    #events = get_data()
-    events['count'] = count_words(wordslist=searchterms, sourcedict=events, countfield='document')
-    events['count_summary'] = count_words(wordslist=searchterms, sourcedict=events, countfield='summary')
-    events = events.sort_values(by=['count_summary', 'count'], ascending=False)
-    results = events[(events['count'] > 0) | (events['count_summary'] > 0)]
-    print(time.time()-tm)
+    if searchword == '' or searchword is None:
+        results = pd.DataFrame(columns=events.columns)
+        results.loc[len(results)] = list(events.columns)
+    else:
+        tm = time.time()
+        searchterms = get_searchmatrix(searchword)
+        #events = get_data()
+        events['count'] = count_words(wordslist=searchterms, sourcedict=events, countfield='document')
+        events['count_summary'] = count_words(wordslist=searchterms, sourcedict=events, countfield='summary')
+        events = events.sort_values(by=['count_summary', 'count'], ascending=False)
+        results = events[(events['count'] > 0) | (events['count_summary'] > 0)]
+        print(time.time()-tm)
     return(results)
 
 
