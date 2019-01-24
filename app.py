@@ -6,6 +6,12 @@ import pandas as pd
 from ORI_BZK import get_selection, get_searchmatrix
 from dash.dependencies import Output, Input, State
 
+external_css = ["https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css",
+                "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css", ]
+
+external_js = ["http://code.jquery.com/jquery-3.3.1.min.js",
+               "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"]
+
 #load data and filter for recent data
 df = pd.read_json('total.json', orient='records')
 df = df.loc[df['date']>='2016-01-01']
@@ -16,28 +22,18 @@ def getvaluecounts(df, field):
     return(df.sort_index())
 
 
-app = dash.Dash()
-colors = {
-    'background': '#111111',
-    'text': '#7FDBFF'
-}
+app = dash.Dash(external_scripts = external_js,
+external_stylesheets = external_css)
 markdown_text = '''
 Select a **single** row to see the details
 '''
-app.layout = html.Div(style={'backgroundColor': colors['background']},
+app.layout = html.Div(
     children=[
-        html.H1(
-            children='Keteninformatie',
-            style={
-                'textAlign': 'center',
-                'color': colors['text']
-            }
-        ),
-        html.Div(id='textfield', children='POC. Tool voor inzicht in beleid',
-        style={
-                'textAlign': 'center',
-                'color': colors['text']
-        }),
+        html.Nav(
+        className='navbar navbar-expand-lg navbar-light bg-light', 
+        children =[html.A(className='navbar-brand', children='Inzicht in beleid')
+        ]),
+
         dcc.Input(placeholder='Enter a value...', id='input-box', type='text'),
         html.Button('Zoek', id='button'),
         dcc.Tabs(id="tabs", value='tab-1', children=[
@@ -162,7 +158,6 @@ def query_button_clicked(selected_row_indices, rows, value):
         value = 'Select a **single** row to see the details'
     value = '''''' + value + ''''''
     return dcc.Markdown(children=value)
-
 
 if __name__ == '__main__':
     app.run_server(debug=True)
