@@ -3,7 +3,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
 import pandas as pd
-from ORI_BZK import get_selection, get_searchmatrix
+from ORI_BZK import get_selection, get_searchmatrix, have_internet
 from dash.dependencies import Output, Input, State
 
 external_css = ["https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css",
@@ -15,18 +15,23 @@ external_js = ["http://code.jquery.com/jquery-3.3.1.min.js",
 #load data and filter for recent data
 df = pd.read_json('total.json', orient='records')
 df = df.loc[df['date']>='2016-01-01']
+dfxtra = pd.read_json('xtra_data.json', orient='records')
 
 def getvaluecounts(df, field):
     """function to count al occurences of values in field of df."""
     df = df[field].value_counts()
     return(df.sort_index())
 
-
 app = dash.Dash(external_scripts = external_js,
 external_stylesheets = external_css)
-markdown_text = '''
-Select a **single** row to see the details
-'''
+
+if have_internet() is False:
+    app.css.config.serve_locally = True
+    app.scripts.config.serve_locally = True
+else:
+    app.css.config.serve_locally = False
+    app.scripts.config.serve_locally = False
+
 app.layout = html.Div(
     children=[
         html.Nav(
@@ -99,6 +104,9 @@ app.layout = html.Div(
                     )
                 ],
                 )
+            ]),
+            dcc.Tab(label='Tab three', value='tab-3', children=[
+                html.Div(id='container')
             ])
         ])
 ])
@@ -111,9 +119,30 @@ app.layout = html.Div(
     [State('input-box', 'value')])
 def update_output(n_clicks, abvalue, searchvalue):
     """ Callback to fill table with searchresults. """
-    if searchvalue is not None:
-        table_data = get_selection(df, searchvalue)
-        return table_data.to_dict("rows")
+    table_data = get_selection(df, searchvalue)
+    return table_data.to_dict("rows")
+
+
+@app.callback(
+    Output('container', 'children'),
+    [Input('button', 'n_clicks')])
+def display_graphs(n_clicks):
+    graphs = []
+    for i in range(3):
+        graphs.append(dcc.Graph(
+            id='piegram-{}'.format(i),
+            figure={
+                'data': [{
+                    'values': [10, 20, 70],
+                    'labels': ['een', 'twee', 'drie'],
+                    'type':'pie'
+                }],
+                'layout': {
+                    'title': 'Graph {}'.format(i)
+                }
+            }
+        ))
+    return html.Div(graphs)
 
 
 @app.callback(
