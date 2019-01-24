@@ -22,6 +22,7 @@ def getvaluecounts(df, field):
     df = df[field].value_counts()
     return(df.sort_index())
 
+
 app = dash.Dash(external_scripts = external_js,
 external_stylesheets = external_css)
 
@@ -44,7 +45,7 @@ app.layout = html.Div(
         dcc.Tabs(id="tabs", value='tab-1', children=[
             dcc.Tab(label='Tab one', value='tab-1', children=[
                 html.Div(children=[
-                    html.Div(id='textbox', children=dcc.Markdown(children=markdown_text),
+                    html.Div(id='textbox', children=dcc.Markdown(children='''Select a **single** row to see the details'''),
                         style={
                             'textAlign': 'left',
                             'backgroundColor': 'white',

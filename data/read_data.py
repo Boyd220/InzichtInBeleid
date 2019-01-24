@@ -79,12 +79,20 @@ for source in sources:
         for row in range(2, rows):
             question = ws.cell(row=row, column=1).value
             questype = 'open'
-            subresult = [question]
+            subresult = question
             subresult = [question, questype, subresult, row-1]
             result.append(subresult)
 
     for row in result:
-        totalresult.append(['inwoner', '1-1-2019', row[2], source[0]+'_'+str(row[3]), source[0], 'Brockhorst', row[0], source[1], row[1]])
+        totalresult.append({'author':'inwoner',
+                            'date':'1-1-2019',
+                            'document':row[2],
+                            'id':source[0]+'_'+str(row[3]),
+                            'masterID':source[0],
+                            'place':'Brockhorst',
+                            'summary':row[0],
+                            'sourcetype':source[1],
+                            'questype':row[1]})
 
 # save data
 with open("xtra_data.json", "w") as f:
