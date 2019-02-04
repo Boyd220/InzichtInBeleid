@@ -11,18 +11,11 @@ external_css = ["https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awe
 
 external_js = ["http://code.jquery.com/jquery-3.3.1.min.js",
                "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"]
-<<<<<<< HEAD
-               
-#load data and filter for recent data
-df = pd.read_json('total.json', orient='records')
-df = df.loc[df['date']>='2016-01-01']
-dfxtra = pd.read_json('xtra_data.json', orient='records')
-=======
+
 
 # load data and filter for recent data
-datamodel = ORIDC('total.json','xtra_data.json')
+datamodel = ORIDC('total.json', 'xtra_data.json')
 
->>>>>>> 92e84512e907b207a0c4d879fda692c82750ebfc
 
 def getvaluecounts(df, field):
     """function to count al occurences of values in field of df."""
@@ -42,95 +35,177 @@ else:
 app.layout = html.Div(
     children=[
         html.Nav(
-<<<<<<< HEAD
-        className='navbar navbar-expand-lg navbar-light', style={'background-color': 'white'},
-        children =[html.Img(src='https://helix.nl/wp-content/uploads/2017/02/Rijkslogo-Bouwbesluit-s2.png', 
-        width='125',
-        height='75',
-        style={'margin': 'auto'}),
-=======
-        className='navbar navbar-expand-lg navbar-light bg-light',
-        children =[html.A(className='navbar-brand', children='Inzicht in beleid')
->>>>>>> 92e84512e907b207a0c4d879fda692c82750ebfc
-        ]),
-        html.Div(style={'width': '100%', 'background-color': '#00689B', "height":"70px"}, children=[
-        html.A(children='Inzicht in beleid', style = {"color":"white", "float":"right", "margin-right":"1em", "padding-top":"12px", "font-size":"30px"}), 
-        dcc.Input(placeholder='Typ een zoekterm...', id='input-box', type='text', style={"margin-right":"1em", "margin-top":"1.3em", "margin-left": "1em"}),
-        html.Button('Zoek', id='button', style={"margin-top":"1.3em"})]),
-        dcc.Tabs(id="tabs", value='tab-1', children=[
-            dcc.Tab(label='Tab one', value='tab-1', children=[
-                html.Div(children=[
-                    html.Div(id='textbox', children=dcc.Markdown(children='''Select a **single** row to see the details'''),
-                        style={
-                            'textAlign': 'left',
-                            'backgroundColor': 'white',
-                            'width': '40%',
-                            'display': 'inline-block'
-                        }
-                    ),
-                    html.Div(
-                        dash_table.DataTable(
-                            id='table',
-                            columns=[{"name": i, "id": i} for i in ['author', 'date', 'place', 'summary']],
-                            data=[],
-                            # data=df.to_dict("rows"),
-                            row_selectable='single',
-                            n_fixed_rows=1,
-                            selected_rows=[],
-                            style_table={
-                                'maxHeight': '300',
-                                'overflowY': 'scroll'
-                            },
-                            style_cell={
-                                'minWidth': '30px', 'maxWidth': '500px',
-                                'whiteSpace': 'no-wrap',
-                                'overflow': 'hidden',
-                                'textOverflow': 'ellipsis',
-                            },
-                            css=[{
-                                'selector': '.dash-cell div.dash-cell-value',
-                                'rule': 'display: inline; white-space: inherit; overflow: inherit; text-overflow: inherit;'
-                            }],
-                            style_cell_conditional=[
-                                {'if': {'column_id': 'author'},
-                                 'width': '100px'},
-                                {'if': {'column_id': 'summary'},
-                                 'width': '400px'},
-                            ]
-                        ),
-                    style={'width': '60%', 'display': 'inline-block', 'vertical-align': 'top'} )
-                ])
-            ]),
-            dcc.Tab(label='Tab two', value='tab-2', children=[
-                html.Div(children=[
-                    dcc.Graph(
-                        id='tabgraph',
-                        figure={
-                            'data': [{
-                                    'x': [1, 2, 3, 4],
-                                    'y': [4, 1, 3, 5],
-                                    'name': 'TK',
-                                    'mode': 'markers',
-                                }, {
-                                    'x': [1, 2, 3, 4],
-                                    'y': [9, 4, 1, 4],
-                                    'name': 'Gemeente',
-                                    'mode': 'markers',
-                                }
-                            ]
-                        }
-                    )
-                ],
+            className='navbar navbar-expand-lg navbar-light',
+            style={'background-color': 'white'},
+            children=[
+                html.Img(
+                    src='https://helix.nl/wp-content/uploads/2017/02/Rijkslogo-Bouwbesluit-s2.png',
+                    width='125',
+                    height='75',
+                    style={
+                        'margin': 'auto'
+                    }
+                ),
+                html.Div(
+                    className='navbar navbar-expand-lg navbar-light bg-light',
+                    children=[
+                        html.A(
+                            className='navbar-brand',
+                            children='Inzicht in beleid'
+                        )
+                    ]
                 )
             ]),
-            dcc.Tab(label='Tab three', value='tab-3', children=[
-                html.Div(id='tab3container', children=[
-                    html.Div(id='piecontainer',style={'display': 'inline-block'}),
-                    html.Div(id='wordcontainer',style={'display': 'inline-block'})
-                ])
-            ])
-        ])
-])
+        html.Div(
+            style={
+                'width': '100%',
+                'background-color': '#00689B',
+                "height": "70px"
+            },
+            children=[
+                html.A(
+                    children='Inzicht in beleid',
+                    style={
+                        "color": "white",
+                        "float": "right",
+                        "margin-right": "1em",
+                        "padding-top": "12px",
+                        "font-size": "30px"
+                    }
+                ),
+                dcc.Input(
+                    placeholder='Typ een zoekterm...',
+                    id='input-box',
+                    type='text',
+                    style={
+                        "margin-right": "1em",
+                        "margin-top": "1.3em",
+                        "margin-left": "1em"
+                    }
+                ),
+                html.Button(
+                    'Zoek',
+                    id='button',
+                    style={
+                        "margin-top": "1.3em"
+                    }
+                )
+            ]
+        ),
+        dcc.Tabs(
+            id="tabs",
+            value='tab-1',
+            children=[
+                dcc.Tab(
+                    label='Tab one',
+                    value='tab-1',
+                    children=[
+                        html.Div(children=[
+                            html.Div(
+                                id='textbox',
+                                children=
+                                    dcc.Markdown(
+                                        children='''Select a **single** row to see the details'''
+                                    ),
+                                style={
+                                    'textAlign': 'left',
+                                    'backgroundColor': 'white',
+                                    'width': '40%',
+                                    'display': 'inline-block'
+                                }
+                            ),
+                            html.Div(
+                                dash_table.DataTable(
+                                    id='table',
+                                    columns=[{"name": i, "id": i} for i in ['author', 'date', 'place', 'summary']],
+                                    data=[],
+                                    # data=df.to_dict("rows"),
+                                    row_selectable='single',
+                                    n_fixed_rows=1,
+                                    selected_rows=[],
+                                    style_table={
+                                        'maxHeight': '300',
+                                        'overflowY': 'scroll'
+                                    },
+                                    style_cell={
+                                        'minWidth': '30px', 'maxWidth': '500px',
+                                        'whiteSpace': 'no-wrap',
+                                        'overflow': 'hidden',
+                                        'textOverflow': 'ellipsis',
+                                    },
+                                    css=[{
+                                        'selector': '.dash-cell div.dash-cell-value',
+                                        'rule': 'display: inline; white-space: inherit; overflow: inherit; text-overflow: inherit;'
+                                    }],
+                                    style_cell_conditional=[
+                                        {'if': {'column_id': 'author'},
+                                         'width': '100px'},
+                                        {'if': {'column_id': 'summary'},
+                                         'width': '400px'},
+                                    ]
+                                ),
+                                style={
+                                    'width': '60%',
+                                    'display': 'inline-block',
+                                    'vertical-align': 'top'}
+                            )
+                        ])
+                    ]
+                ),
+                dcc.Tab(
+                    label='Tab two',
+                    value='tab-2',
+                    children=[
+                        html.Div(
+                            children=[
+                                dcc.Graph(
+                                    id='tabgraph',
+                                    figure={
+                                        'data': [{
+                                                'x': [1, 2, 3, 4],
+                                                'y': [4, 1, 3, 5],
+                                                'name': 'TK',
+                                                'mode': 'markers',
+                                            }, {
+                                                'x': [1, 2, 3, 4],
+                                                'y': [9, 4, 1, 4],
+                                                'name': 'Gemeente',
+                                                'mode': 'markers',
+                                            }
+                                        ]
+                                    }
+                                )
+                            ],
+                        )
+                    ]
+                ),
+                dcc.Tab(
+                    label='Tab three',
+                    value='tab-3',
+                    children=[
+                        html.Div(
+                            id='tab3container',
+                            children=[
+                                html.Div(
+                                    id='piecontainer',
+                                    style={
+                                        'display': 'inline-block'
+                                    }
+                                ),
+                                html.Div(
+                                    id='wordcontainer',
+                                    style={
+                                        'display': 'inline-block'
+                                    }
+                                )
+                            ]
+                        )
+                    ]
+                )
+            ]
+        )
+    ]
+)
 
 
 @app.callback(
@@ -161,25 +236,19 @@ def update_scatter(data):
                 'name': 'TK',
                 'mode': 'markers',
             }, {
-                    'x': dfOt.index.tolist(),
-                    'y': dfOt.tolist(),
-                    'name': 'Gemeente',
-                    'mode': 'markers',
-            }]}
+                'x': dfOt.index.tolist(),
+                'y': dfOt.tolist(),
+                'name': 'Gemeente',
+                'mode': 'markers',
+            }]
+        }
 
 
 @app.callback(Output('textbox', 'children'),
               [Input('table', 'selected_rows'),
-<<<<<<< HEAD
-               Input('table', 'data')],
-               [State('input-box', 'value')])
-
-def query_button_clicked(selected_row_indices, rows, value):
-=======
                Input('table', 'data')])
 def show_clicked_doc(selected_row_indices, rows):
->>>>>>> 92e84512e907b207a0c4d879fda692c82750ebfc
-    """ Callback to retrieve the selected document and output to the textbox. """
+    """Callback to retrieve the selected document and output to the textbox."""
     if selected_row_indices is None:
         value = 'Select a single row to see the details'
     elif len(selected_row_indices) == 1:
@@ -190,7 +259,7 @@ def show_clicked_doc(selected_row_indices, rows):
         text = text.replace('\n', '\n\n')
         value = text
     else:
-        value = 'Select a **single** row to see the details'
+        value = 'Select a single row to see the details'
     value = '''''' + value + ''''''
     return dcc.Markdown(children=value)
 
