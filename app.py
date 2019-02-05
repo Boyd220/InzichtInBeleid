@@ -1,4 +1,4 @@
-from ORI_BZK import ORIDC, have_internet
+from ORI_BZK import ORIDC, have_internet, create_wcimage
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -23,7 +23,7 @@ def getvaluecounts(df, field):
     return(df.sort_index())
 
 
-app = dash.Dash(external_scripts = external_js, external_stylesheets = external_css)
+app = dash.Dash(external_scripts=external_js, external_stylesheets=external_css)
 
 if have_internet() is False:
     app.css.config.serve_locally = True
@@ -182,25 +182,29 @@ app.layout = html.Div(
                 dcc.Tab(
                     label='Tab three',
                     value='tab-3',
-                    children=[
-                        html.Div(
-                            id='tab3container',
-                            children=[
+                    children=html.Div(
+                        html.Div([
+                            html.Div([
                                 html.Div(
                                     id='piecontainer',
                                     style={
                                         'display': 'inline-block'
                                     }
-                                ),
+                                )],
+                                className='six columns'
+                            ),
+                            html.Div([
                                 html.Div(
                                     id='wordcontainer',
                                     style={
                                         'display': 'inline-block'
                                     }
-                                )
-                            ]
+                                )],
+                                className='six columns'
+                            )],
+                            className='row'
                         )
-                    ]
+                    )
                 )
             ]
         )
@@ -279,12 +283,26 @@ def unclick(n_clicks):
      Input('table', 'data')])
 def update_openquestions(n_clicks, tabledata):
     print(datamodel.searchword)
+    resultdiv = []
     question = []
     answers = []
-    for index, row in datamodel.mcresult.iterrows():
+    for item, row in datamodel.mcresult.iterrows():
         if row['questype'] == 'open':
             question.append(html.Div(row['summary']))
-    return html.Div(question)
+            answers.append(html.Img(create_wcimage(row['wordcounter'])))
+            resultdiv.append(
+                    html.Img(
+                        id=item,
+                        src=create_wcimage(row['wordcounter']),
+                        style={
+                            'vertical-align': 'top',
+                            'width': '50%',
+                            'height': '50%'
+                        },
+                        title=row['summary']
+                        )
+                    )
+    return resultdiv
 
 
 @app.callback(
@@ -297,6 +315,7 @@ def update_piegraphs(n_clicks, tabledata):
     for index, row in datamodel.mcresult.iterrows():
         if row['questype'] == 'meerkeuze':
             graphdata.append({'title': row['summary'], 'data': row['document']})
+    print(len(graphdata))
     if len(graphdata) > 0:
         for i in range(len(graphdata)):
             values = []
