@@ -16,6 +16,17 @@ def have_internet():
         conn.close()
         return False
 
+
+def getbrokenstring(inputstr,value=68):
+    if len(inputstr)<value:
+        return inputstr
+    letter=inputstr[value]
+    while letter != ' ':
+        value-=1
+        letter=inputstr[value]
+    return inputstr[:value]+'<br>'+getbrokenstring(inputstr[value:])
+
+
 class ORIDC:
     def __init__(self, mainfile,subfile):
         self.maindata = pd.read_json(mainfile, orient='records')
@@ -62,23 +73,22 @@ class ORIDC:
             temp += sourcedict[countfield].str.count(term)
         return temp
 
-
-def create_wcimage(counter):
-    wc_img = WordCloud(
-        background_color="white",
-        width=700,
-        height=500,
-        colormap="Dark2",
-        max_words=10
-    ).generate_from_frequencies(
-        frequencies=counter
-    ).to_image()
-    # convert the PIL image to bytes array
-    with BytesIO() as output:
-        with wc_img as img:
-            img.save(output, 'png')
-        data = output.getvalue()
-    # encode the bytes array representation of the word cloude image
-    encoded_image = base64.b64encode(data)
-    # return the image for rendering
-    return 'data:image/png;base64,{}'.format(encoded_image.decode())
+    def create_wcimage(self, counter):
+        wc_img = WordCloud(
+            background_color="white",
+            width=700,
+            height=500,
+            colormap="Dark2",
+            max_words=10
+        ).generate_from_frequencies(
+            frequencies=counter
+        ).to_image()
+        # convert the PIL image to bytes array
+        with BytesIO() as output:
+            with wc_img as img:
+                img.save(output, 'png')
+            data = output.getvalue()
+        # encode the bytes array representation of the word cloude image
+        encoded_image = base64.b64encode(data)
+        # return the image for rendering
+        return 'data:image/png;base64,{}'.format(encoded_image.decode())

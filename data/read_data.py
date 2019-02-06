@@ -70,16 +70,14 @@ for source in sources:
             subresult = []
             for row in range(4, rows):
                 cellvalue = ws.cell(row=row, column=col).value
-                if questype == 'open' and (cellvalue == 0 or cellvalue is None):
+                if cellvalue == 0 or cellvalue is None:
                     cellvalue = ''
-                else:
-                    subresult.append(cellvalue)
+                subresult.append(cellvalue)
             if questype == 'meerkeuze':
                 subresult = Counter(subresult)
                 wordcount = ''
             elif questype == 'open':
                 wordcount = getwordcount(subresult)
-                break
             subresult = [question, questype, subresult, col-1, wordcount]
             result.append(subresult)
 

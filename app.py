@@ -1,4 +1,4 @@
-from ORI_BZK import ORIDC, have_internet, create_wcimage
+from ORI_BZK import ORIDC, have_internet, getbrokenstring
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -11,6 +11,7 @@ external_css = ["https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awe
 
 external_js = ["http://code.jquery.com/jquery-3.3.1.min.js",
                "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"]
+
 
 # load data and filter for recent data
 datamodel = ORIDC('total.json', 'xtra_data.json')
@@ -34,16 +35,63 @@ else:
 app.layout = html.Div(
     children=[
         html.Nav(
-        className='navbar navbar-expand-lg navbar-light', style={'background-color': 'white'},
-        children =[html.Img(src='https://helix.nl/wp-content/uploads/2017/02/Rijkslogo-Bouwbesluit-s2.png', 
-        width='125',
-        height='75',
-        style={'margin': 'auto'}),
-        ]),
-        html.Div(style={'width': '100%', 'background-color': '#00689B', "height":"70px"}, children=[
-        html.A(children='Inzicht in beleid', style = {"color":"white", "float":"right", "margin-right":"1em", "padding-top":"12px", "font-size":"30px"}), 
-        dcc.Input(placeholder='Typ een zoekterm...', id='input-box', type='text', style={"margin-right":"1em", "margin-top":"1.3em", "margin-left": "1em"}),
-        html.Button('Zoek', id='button', style={"margin-top":"1.3em"})]),
+            className='navbar navbar-expand-lg navbar-light',
+            style={'background-color': 'white'},
+            children=[
+                html.Img(
+                    src='https://helix.nl/wp-content/uploads/2017/02/Rijkslogo-Bouwbesluit-s2.png',
+                    width='125',
+                    height='75',
+                    style={
+                        'margin': 'auto'
+                    }
+                ),
+                html.Div(
+                    className='navbar navbar-expand-lg navbar-light bg-light',
+                    children=[
+                        html.A(
+                            className='navbar-brand',
+                            children='Inzicht in beleid'
+                        )
+                    ]
+                )
+            ]),
+        html.Div(
+            style={
+                'width': '100%',
+                'background-color': '#00689B',
+                "height": "70px"
+            },
+            children=[
+                html.A(
+                    children='Inzicht in beleid',
+                    style={
+                        "color": "white",
+                        "float": "right",
+                        "margin-right": "1em",
+                        "padding-top": "12px",
+                        "font-size": "30px"
+                    }
+                ),
+                dcc.Input(
+                    placeholder='Typ een zoekterm...',
+                    id='input-box',
+                    type='text',
+                    style={
+                        "margin-right": "1em",
+                        "margin-top": "1.3em",
+                        "margin-left": "1em"
+                    }
+                ),
+                html.Button(
+                    'Zoek',
+                    id='button',
+                    style={
+                        "margin-top": "1.3em"
+                    }
+                )
+            ]
+        ),
         dcc.Tabs(
             id="tabs",
             value='tab-1',
@@ -57,7 +105,7 @@ app.layout = html.Div(
                                 id='textbox',
                                 children=
                                     dcc.Markdown(
-                                        children='''Select a **single** row to see the details'''
+                                        children='''Select a single row to see the details'''
                                     ),
                                 style={
                                     'textAlign': 'left',
@@ -164,6 +212,11 @@ app.layout = html.Div(
 )
 
 
+app.css.append_css({
+    'external_url': 'https://codepen.io/chriddyp/pen/bWLwgP.css'
+})
+
+
 @app.callback(
     Output('table', 'data'),
     [Input('button', 'n_clicks')],
@@ -204,7 +257,7 @@ def update_scatter(data):
               [Input('table', 'selected_rows'),
                Input('table', 'data')])
 def show_clicked_doc(selected_row_indices, rows):
-    """ Callback to retrieve the selected document and output to the textbox. """
+    """Callback to retrieve the selected document and output to the textbox."""
     if selected_row_indices is None:
         value = 'Select a single row to see the details'
     elif len(selected_row_indices) == 1:
@@ -236,24 +289,21 @@ def unclick(n_clicks):
 def update_openquestions(n_clicks, tabledata):
     print(datamodel.searchword)
     resultdiv = []
-    question = []
-    answers = []
     for item, row in datamodel.mcresult.iterrows():
         if row['questype'] == 'open':
-            question.append(html.Div(row['summary']))
-            answers.append(html.Img(create_wcimage(row['wordcounter'])))
+            resultdiv.append(html.Div(str(row['summary'])))
             resultdiv.append(
                     html.Img(
                         id=item,
-                        src=create_wcimage(row['wordcounter']),
+                        src=datamodel.create_wcimage(row['wordcounter']),
                         style={
-                            'vertical-align': 'top',
-                            'width': '50%',
-                            'height': '50%'
+                            'vertical-align': 'top'
                         },
                         title=row['summary']
                         )
                     )
+    if len(resultdiv)==0:
+        resultdiv.append(html.Div('Geen open vragen gevonden.'))
     return resultdiv
 
 
@@ -267,7 +317,6 @@ def update_piegraphs(n_clicks, tabledata):
     for index, row in datamodel.mcresult.iterrows():
         if row['questype'] == 'meerkeuze':
             graphdata.append({'title': row['summary'], 'data': row['document']})
-    print(len(graphdata))
     if len(graphdata) > 0:
         for i in range(len(graphdata)):
             values = []
@@ -284,7 +333,7 @@ def update_piegraphs(n_clicks, tabledata):
                         'type': 'pie'
                     }],
                     'layout': {
-                        'title': graphdata[i]['title']
+                        'title': getbrokenstring(graphdata[i]['title'])
                     }
                 }
             ))
