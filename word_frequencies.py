@@ -1,7 +1,7 @@
 import pickle
 
-# import nltk
-# nltk.download('stopwords')
+import nltk
+nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.probability import FreqDist
 
