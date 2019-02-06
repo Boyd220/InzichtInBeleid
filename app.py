@@ -11,18 +11,10 @@ external_css = ["https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awe
 
 external_js = ["http://code.jquery.com/jquery-3.3.1.min.js",
                "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"]
-<<<<<<< HEAD
-               
-#load data and filter for recent data
-df = pd.read_json('total.json', orient='records')
-df = df.loc[df['date']>='2016-01-01']
-dfxtra = pd.read_json('xtra_data.json', orient='records')
-=======
 
 # load data and filter for recent data
 datamodel = ORIDC('total.json','xtra_data.json')
 
->>>>>>> 92e84512e907b207a0c4d879fda692c82750ebfc
 
 def getvaluecounts(df, field):
     """function to count al occurences of values in field of df."""
@@ -42,16 +34,11 @@ else:
 app.layout = html.Div(
     children=[
         html.Nav(
-<<<<<<< HEAD
         className='navbar navbar-expand-lg navbar-light', style={'background-color': 'white'},
         children =[html.Img(src='https://helix.nl/wp-content/uploads/2017/02/Rijkslogo-Bouwbesluit-s2.png', 
         width='125',
         height='75',
         style={'margin': 'auto'}),
-=======
-        className='navbar navbar-expand-lg navbar-light bg-light',
-        children =[html.A(className='navbar-brand', children='Inzicht in beleid')
->>>>>>> 92e84512e907b207a0c4d879fda692c82750ebfc
         ]),
         html.Div(style={'width': '100%', 'background-color': '#00689B', "height":"70px"}, children=[
         html.A(children='Inzicht in beleid', style = {"color":"white", "float":"right", "margin-right":"1em", "padding-top":"12px", "font-size":"30px"}), 
@@ -170,15 +157,8 @@ def update_scatter(data):
 
 @app.callback(Output('textbox', 'children'),
               [Input('table', 'selected_rows'),
-<<<<<<< HEAD
-               Input('table', 'data')],
-               [State('input-box', 'value')])
-
-def query_button_clicked(selected_row_indices, rows, value):
-=======
                Input('table', 'data')])
 def show_clicked_doc(selected_row_indices, rows):
->>>>>>> 92e84512e907b207a0c4d879fda692c82750ebfc
     """ Callback to retrieve the selected document and output to the textbox. """
     if selected_row_indices is None:
         value = 'Select a single row to see the details'
