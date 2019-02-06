@@ -1,4 +1,4 @@
-from ORI_BZK import ORIDC, have_internet
+from ORI_BZK import ORIDC, have_internet, create_wcimage
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -13,7 +13,7 @@ external_js = ["http://code.jquery.com/jquery-3.3.1.min.js",
                "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"]
 
 # load data and filter for recent data
-datamodel = ORIDC('total.json','xtra_data.json')
+datamodel = ORIDC('total.json', 'xtra_data.json')
 
 
 def getvaluecounts(df, field):
@@ -22,7 +22,7 @@ def getvaluecounts(df, field):
     return(df.sort_index())
 
 
-app = dash.Dash(external_scripts = external_js, external_stylesheets = external_css)
+app = dash.Dash(external_scripts=external_js, external_stylesheets=external_css)
 
 if have_internet() is False:
     app.css.config.serve_locally = True
@@ -44,80 +44,124 @@ app.layout = html.Div(
         html.A(children='Inzicht in beleid', style = {"color":"white", "float":"right", "margin-right":"1em", "padding-top":"12px", "font-size":"30px"}), 
         dcc.Input(placeholder='Typ een zoekterm...', id='input-box', type='text', style={"margin-right":"1em", "margin-top":"1.3em", "margin-left": "1em"}),
         html.Button('Zoek', id='button', style={"margin-top":"1.3em"})]),
-        dcc.Tabs(id="tabs", value='tab-1', children=[
-            dcc.Tab(label='Tab one', value='tab-1', children=[
-                html.Div(children=[
-                    html.Div(id='textbox', children=dcc.Markdown(children='''Select a **single** row to see the details'''),
-                        style={
-                            'textAlign': 'left',
-                            'backgroundColor': 'white',
-                            'width': '40%',
-                            'display': 'inline-block'
-                        }
-                    ),
-                    html.Div(
-                        dash_table.DataTable(
-                            id='table',
-                            columns=[{"name": i, "id": i} for i in ['author', 'date', 'place', 'summary']],
-                            data=[],
-                            # data=df.to_dict("rows"),
-                            row_selectable='single',
-                            n_fixed_rows=1,
-                            selected_rows=[],
-                            style_table={
-                                'maxHeight': '300',
-                                'overflowY': 'scroll'
-                            },
-                            style_cell={
-                                'minWidth': '30px', 'maxWidth': '500px',
-                                'whiteSpace': 'no-wrap',
-                                'overflow': 'hidden',
-                                'textOverflow': 'ellipsis',
-                            },
-                            css=[{
-                                'selector': '.dash-cell div.dash-cell-value',
-                                'rule': 'display: inline; white-space: inherit; overflow: inherit; text-overflow: inherit;'
-                            }],
-                            style_cell_conditional=[
-                                {'if': {'column_id': 'author'},
-                                 'width': '100px'},
-                                {'if': {'column_id': 'summary'},
-                                 'width': '400px'},
-                            ]
-                        ),
-                    style={'width': '60%', 'display': 'inline-block', 'vertical-align': 'top'} )
-                ])
-            ]),
-            dcc.Tab(label='Tab two', value='tab-2', children=[
-                html.Div(children=[
-                    dcc.Graph(
-                        id='tabgraph',
-                        figure={
-                            'data': [{
-                                    'x': [1, 2, 3, 4],
-                                    'y': [4, 1, 3, 5],
-                                    'name': 'TK',
-                                    'mode': 'markers',
-                                }, {
-                                    'x': [1, 2, 3, 4],
-                                    'y': [9, 4, 1, 4],
-                                    'name': 'Gemeente',
-                                    'mode': 'markers',
+        dcc.Tabs(
+            id="tabs",
+            value='tab-1',
+            children=[
+                dcc.Tab(
+                    label='Tab one',
+                    value='tab-1',
+                    children=[
+                        html.Div(children=[
+                            html.Div(
+                                id='textbox',
+                                children=
+                                    dcc.Markdown(
+                                        children='''Select a **single** row to see the details'''
+                                    ),
+                                style={
+                                    'textAlign': 'left',
+                                    'backgroundColor': 'white',
+                                    'width': '40%',
+                                    'display': 'inline-block'
                                 }
-                            ]
-                        }
+                            ),
+                            html.Div(
+                                dash_table.DataTable(
+                                    id='table',
+                                    columns=[{"name": i, "id": i} for i in ['author', 'date', 'place', 'summary']],
+                                    data=[],
+                                    # data=df.to_dict("rows"),
+                                    row_selectable='single',
+                                    n_fixed_rows=1,
+                                    selected_rows=[],
+                                    style_table={
+                                        'maxHeight': '300',
+                                        'overflowY': 'scroll'
+                                    },
+                                    style_cell={
+                                        'minWidth': '30px', 'maxWidth': '500px',
+                                        'whiteSpace': 'no-wrap',
+                                        'overflow': 'hidden',
+                                        'textOverflow': 'ellipsis',
+                                    },
+                                    css=[{
+                                        'selector': '.dash-cell div.dash-cell-value',
+                                        'rule': 'display: inline; white-space: inherit; overflow: inherit; text-overflow: inherit;'
+                                    }],
+                                    style_cell_conditional=[
+                                        {'if': {'column_id': 'author'},
+                                         'width': '100px'},
+                                        {'if': {'column_id': 'summary'},
+                                         'width': '400px'},
+                                    ]
+                                ),
+                                style={
+                                    'width': '60%',
+                                    'display': 'inline-block',
+                                    'vertical-align': 'top'}
+                            )
+                        ])
+                    ]
+                ),
+                dcc.Tab(
+                    label='Tab two',
+                    value='tab-2',
+                    children=[
+                        html.Div(
+                            children=[
+                                dcc.Graph(
+                                    id='tabgraph',
+                                    figure={
+                                        'data': [{
+                                                'x': [1, 2, 3, 4],
+                                                'y': [4, 1, 3, 5],
+                                                'name': 'TK',
+                                                'mode': 'markers',
+                                            }, {
+                                                'x': [1, 2, 3, 4],
+                                                'y': [9, 4, 1, 4],
+                                                'name': 'Gemeente',
+                                                'mode': 'markers',
+                                            }
+                                        ]
+                                    }
+                                )
+                            ],
+                        )
+                    ]
+                ),
+                dcc.Tab(
+                    label='Tab three',
+                    value='tab-3',
+                    children=html.Div(
+                        html.Div([
+                            html.Div([
+                                html.Div(
+                                    id='piecontainer',
+                                    style={
+                                        'display': 'inline-block'
+                                    }
+                                )],
+                                className='six columns'
+                            ),
+                            html.Div([
+                                html.Div(
+                                    id='wordcontainer',
+                                    style={
+                                        'display': 'inline-block'
+                                    }
+                                )],
+                                className='six columns'
+                            )],
+                            className='row'
+                        )
                     )
-                ],
                 )
-            ]),
-            dcc.Tab(label='Tab three', value='tab-3', children=[
-                html.Div(id='tab3container', children=[
-                    html.Div(id='piecontainer',style={'display': 'inline-block'}),
-                    html.Div(id='wordcontainer',style={'display': 'inline-block'})
-                ])
-            ])
-        ])
-])
+            ]
+        )
+    ]
+)
 
 
 @app.callback(
@@ -148,11 +192,12 @@ def update_scatter(data):
                 'name': 'TK',
                 'mode': 'markers',
             }, {
-                    'x': dfOt.index.tolist(),
-                    'y': dfOt.tolist(),
-                    'name': 'Gemeente',
-                    'mode': 'markers',
-            }]}
+                'x': dfOt.index.tolist(),
+                'y': dfOt.tolist(),
+                'name': 'Gemeente',
+                'mode': 'markers',
+            }]
+        }
 
 
 @app.callback(Output('textbox', 'children'),
@@ -170,7 +215,7 @@ def show_clicked_doc(selected_row_indices, rows):
         text = text.replace('\n', '\n\n')
         value = text
     else:
-        value = 'Select a **single** row to see the details'
+        value = 'Select a single row to see the details'
     value = '''''' + value + ''''''
     return dcc.Markdown(children=value)
 
@@ -190,12 +235,26 @@ def unclick(n_clicks):
      Input('table', 'data')])
 def update_openquestions(n_clicks, tabledata):
     print(datamodel.searchword)
+    resultdiv = []
     question = []
     answers = []
-    for index, row in datamodel.mcresult.iterrows():
+    for item, row in datamodel.mcresult.iterrows():
         if row['questype'] == 'open':
             question.append(html.Div(row['summary']))
-    return html.Div(question)
+            answers.append(html.Img(create_wcimage(row['wordcounter'])))
+            resultdiv.append(
+                    html.Img(
+                        id=item,
+                        src=create_wcimage(row['wordcounter']),
+                        style={
+                            'vertical-align': 'top',
+                            'width': '50%',
+                            'height': '50%'
+                        },
+                        title=row['summary']
+                        )
+                    )
+    return resultdiv
 
 
 @app.callback(
@@ -208,6 +267,7 @@ def update_piegraphs(n_clicks, tabledata):
     for index, row in datamodel.mcresult.iterrows():
         if row['questype'] == 'meerkeuze':
             graphdata.append({'title': row['summary'], 'data': row['document']})
+    print(len(graphdata))
     if len(graphdata) > 0:
         for i in range(len(graphdata)):
             values = []

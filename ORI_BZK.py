@@ -2,6 +2,9 @@ import pandas as pd
 import numpy as np
 import time
 import http.client as httplib
+from wordcloud import WordCloud
+from io import BytesIO
+import base64
 
 def have_internet():
     conn = httplib.HTTPConnection("www.google.com", timeout=1)
@@ -58,3 +61,24 @@ class ORIDC:
         for term in self.searchword:
             temp += sourcedict[countfield].str.count(term)
         return temp
+
+
+def create_wcimage(counter):
+    wc_img = WordCloud(
+        background_color="white",
+        width=700,
+        height=500,
+        colormap="Dark2",
+        max_words=10
+    ).generate_from_frequencies(
+        frequencies=counter
+    ).to_image()
+    # convert the PIL image to bytes array
+    with BytesIO() as output:
+        with wc_img as img:
+            img.save(output, 'png')
+        data = output.getvalue()
+    # encode the bytes array representation of the word cloude image
+    encoded_image = base64.b64encode(data)
+    # return the image for rendering
+    return 'data:image/png;base64,{}'.format(encoded_image.decode())
