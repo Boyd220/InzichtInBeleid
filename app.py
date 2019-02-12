@@ -109,7 +109,7 @@ app.layout = html.Div(
                             html.Div(
                                 dash_table.DataTable(
                                     id='table',
-                                    columns=[{"name": i, "id": i} for i in ['Auteur', 'Datum', 'Plaats', 'Synopsis']],
+                                    columns=[{"name": i, "id": i} for i in ['author', 'date', 'place', 'summary']],
                                     data=[],
                                     # data=df.to_dict("rows"),
                                     row_selectable='single',
