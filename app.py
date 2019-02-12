@@ -45,15 +45,6 @@ app.layout = html.Div(
                     style={
                         'margin': 'auto'
                     }
-                ),
-                html.Div(
-                    className='navbar navbar-expand-lg navbar-light bg-light',
-                    children=[
-                        html.A(
-                            className='navbar-brand',
-                            children='Inzicht in beleid'
-                        )
-                    ]
                 )
             ]),
         html.Div(
@@ -87,7 +78,8 @@ app.layout = html.Div(
                     'Zoek',
                     id='button',
                     style={
-                        "margin-top": "1.3em"
+                        "margin-top": "1.3em",
+                        "color": "white"
                     }
                 )
             ]
@@ -97,7 +89,7 @@ app.layout = html.Div(
             value='tab-1',
             children=[
                 dcc.Tab(
-                    label='Tab one',
+                    label='Tekst',
                     value='tab-1',
                     children=[
                         html.Div(children=[
@@ -117,7 +109,7 @@ app.layout = html.Div(
                             html.Div(
                                 dash_table.DataTable(
                                     id='table',
-                                    columns=[{"name": i, "id": i} for i in ['author', 'date', 'place', 'summary']],
+                                    columns=[{"name": i, "id": i} for i in ['Auteur', 'Datum', 'Plaats', 'Synopsis']],
                                     data=[],
                                     # data=df.to_dict("rows"),
                                     row_selectable='single',
@@ -153,7 +145,7 @@ app.layout = html.Div(
                     ]
                 ),
                 dcc.Tab(
-                    label='Tab two',
+                    label='Grafiek',
                     value='tab-2',
                     children=[
                         html.Div(
@@ -180,7 +172,7 @@ app.layout = html.Div(
                     ]
                 ),
                 dcc.Tab(
-                    label='Tab three',
+                    label='Woordenwolk',
                     value='tab-3',
                     children=html.Div(
                         html.Div([
