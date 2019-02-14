@@ -34,6 +34,7 @@ class ORIDC:
         self.adddata = pd.read_json(subfile, orient='records')
         self.mainresult = pd.DataFrame(columns=self.maindata.columns)
         self.mcresult = pd.DataFrame(columns=self.adddata.columns)
+        self.openresult = pd.DataFrame(columns=self.adddata.columns)
         self.searchword = ''
 
     def printcols(self):
@@ -46,6 +47,7 @@ class ORIDC:
         if self.searchword == '' :
             self.mainresult = pd.DataFrame(columns=self.maindata.columns)
             self.mcresult = pd.DataFrame(columns=self.adddata.columns)
+            self.openresult = pd.DataFrame(columns=self.adddata.columns)
         else:
             self.mainresult = pd.DataFrame(self.maindata)
             self.mainresult['count'] = self.count_words(sourcedict=self.maindata, countfield='document')
@@ -55,6 +57,10 @@ class ORIDC:
             self.mcresult['count'] = self.count_words(sourcedict=self.mcresult, countfield='summary')
             self.mcresult = self.mcresult.sort_values(by=['count'], ascending=False)
             self.mcresult = self.mcresult[(self.mcresult['count'] > 0)]
+            self.openresult = pd.DataFrame(self.adddata)
+            self.openresult['count'] = self.count_words(sourcedict=self.openresult, countfield='document')
+            self.openresult = self.openresult.sort_values(by=['count'], ascending=False)
+            self.openresult = self.openresult[(self.openresult['count'] > 0)]
         print(time.time()-tm)
 
     def searchmatrix(self):
