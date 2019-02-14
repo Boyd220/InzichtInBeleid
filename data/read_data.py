@@ -71,8 +71,8 @@ for source in sources:
             for row in range(4, rows):
                 cellvalue = ws.cell(row=row, column=col).value
                 if cellvalue == 0 or cellvalue is None:
-                    cellvalue = ''
-                subresult.append(cellvalue)
+                    cellvalue = 'niet aangevinkt'
+                subresult.append(cellvalue.strip())
             if questype == 'meerkeuze':
                 subresult = Counter(subresult)
                 wordcount = ''
@@ -89,7 +89,7 @@ for source in sources:
             subresult = []
             for col in range(4, columns):
                 cellvalue = ws.cell(row=row, column=col).value
-                if cellvalue is not None:
+                if cellvalue is not None and cellvalue != 0 and cellvalue != '':
                     subresult.append(cellvalue)
             wordcount = getwordcount(subresult)
             subresult = [question, questype, subresult, row-1, wordcount]
