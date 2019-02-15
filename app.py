@@ -1,16 +1,10 @@
-from ORI_BZK import ORIDC, have_internet, getbrokenstring
+from ORI_BZK import ORIDC
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
 import pandas as pd
 from dash.dependencies import Output, Input, State
-
-external_css = ["https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css",
-                "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css", ]
-
-external_js = ["http://code.jquery.com/jquery-3.3.1.min.js",
-               "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"]
 
 
 # load data and filter for recent data
@@ -23,14 +17,10 @@ def getvaluecounts(df, field):
     return(df.sort_index())
 
 
-app = dash.Dash(external_scripts=external_js, external_stylesheets=external_css)
+app = dash.Dash(__name__)
 
-if have_internet() is False:
-    app.css.config.serve_locally = True
-    app.scripts.config.serve_locally = True
-else:
-    app.css.config.serve_locally = False
-    app.scripts.config.serve_locally = False
+
+app.title = 'Inzicht in beleid'
 
 app.layout = html.Div(
     children=[
@@ -39,9 +29,10 @@ app.layout = html.Div(
             style={'background-color': 'white'},
             children=[
                 html.Img(
-                    src='https://helix.nl/wp-content/uploads/2017/02/Rijkslogo-Bouwbesluit-s2.png',
-                    width='125',
-                    height='75',
+                    src='assets/newlogo.png',
+                    #src='data:image/png;base64,{}'.format(encoded_image),
+                    width='175',
+                    height='52',
                     style={
                         'margin': 'auto'
                     }
@@ -97,7 +88,7 @@ app.layout = html.Div(
                                 id='textbox',
                                 children=
                                     dcc.Markdown(
-                                        children='''Select a single row to see the details'''
+                                        children=''
                                     ),
                                 style={
                                     'textAlign': 'left',
@@ -200,13 +191,11 @@ app.layout = html.Div(
                 )
             ]
         )
-    ]
+    ],
+    style={
+        "font-size": "15px"
+    }
 )
-
-
-app.css.append_css({
-    'external_url': 'https://codepen.io/chriddyp/pen/bWLwgP.css'
-})
 
 
 @app.callback(
@@ -251,7 +240,7 @@ def update_scatter(data):
 def show_clicked_doc(selected_row_indices, rows):
     """Callback to retrieve the selected document and output to the textbox."""
     if selected_row_indices is None:
-        value = 'Select a single row to see the details'
+        value = 'Klik een document aan om hem door te lezen'
     elif len(selected_row_indices) == 1:
         row_idx = selected_row_indices[0]
         text = rows[row_idx]['document']
@@ -260,7 +249,7 @@ def show_clicked_doc(selected_row_indices, rows):
         text = text.replace('\n', '\n\n')
         value = text
     else:
-        value = 'Select a single row to see the details'
+        value = 'Klik een document aan om hem door te lezen'
     value = '''''' + value + ''''''
     return dcc.Markdown(children=value)
 
@@ -316,6 +305,7 @@ def update_piegraphs(n_clicks, tabledata):
             for key, value in graphdata[i]['data'].items():
                 values.append(value)
                 labels.append(key)
+            graphs.append(html.Div(str(graphdata[i]['title'])))
             graphs.append(dcc.Graph(
                 id='piegram-{}'.format(i),
                 figure={
@@ -325,7 +315,7 @@ def update_piegraphs(n_clicks, tabledata):
                         'type': 'pie'
                     }],
                     'layout': {
-                        'title': getbrokenstring(graphdata[i]['title'])
+                        'title': ''
                     }
                 }
             ))
