@@ -163,7 +163,7 @@ app.layout = html.Div(
                     ]
                 ),
                 dcc.Tab(
-                    label='Woordenwolk',
+                    label='Vraagselectie',
                     value='tab-3',
                     children=html.Div(
                         html.Div([
@@ -188,6 +188,68 @@ app.layout = html.Div(
                             className='row'
                         )
                     )
+                ),
+                dcc.Tab(
+                    label='Antwoordselectie',
+                    value='tab-4',
+                    children=[
+                        html.Div(
+                            className='row',
+                            children=[
+                                html.Div(
+                                    className='six columns',
+                                    children=[
+                                        html.Div(
+                                            id='newcontainer',
+                                            style={
+                                                'display': 'inline-block'
+                                            }
+                                        )
+                                    ]
+                                ),
+                                html.Div(
+                                    className='six columns',
+                                    children=[
+                                        html.Div(
+                                            id='newcontainer2',
+                                            style={
+                                                'display': 'inline-block'
+                                            },
+                                            children='testing'
+                                        )
+                                    ]
+                                )
+                            ]
+                        ),
+                        html.Div(
+                            className='row',
+                            children=[
+                                html.Div(
+                                    className='six columns',
+                                    children=[
+                                        html.Div(
+                                            id='newcontainer3',
+                                            style={
+                                                'display': 'inline-block'
+                                            }
+                                        )
+                                    ]
+                                ),
+                                html.Div(
+                                    className='six columns',
+                                    children=[
+                                        html.Div(
+                                            id='newcontainer4',
+                                            style={
+                                                'display': 'inline-block'
+                                            },
+                                            children='testing'
+                                        )
+                                    ]
+                                )
+                            ]
+                        )
+                    ]
                 )
             ]
         )
@@ -297,7 +359,7 @@ def update_piegraphs(n_clicks, tabledata):
     graphdata = []
     for index, row in datamodel.mcresult.iterrows():
         if row['questype'] == 'meerkeuze':
-            graphdata.append({'title': row['summary'], 'data': row['document']})
+            graphdata.append({'title': row['summary'], 'data': row['document'][0]})
     if len(graphdata) > 0:
         for i in range(len(graphdata)):
             values = []
@@ -335,6 +397,20 @@ def update_piegraphs(n_clicks, tabledata):
                 }
             ))
     return html.Div(graphs)
+
+
+@app.callback(
+    Output('newcontainer', 'children'),
+    [Input('button', 'n_clicks'),
+     Input('table', 'data')])
+def update_tab4(n_clicks, tabledata):
+    tab4data = []
+    print(datamodel.searchword, 'lengte: ', len(datamodel.openresult))
+    for index, row in datamodel.openresult.iterrows():
+        if row['questype'] == 'open':
+            tab4data.append({'title': row['summary'], 'data': row['document']})
+    for item in tab4data:
+        print(item['title'])
 
 
 if __name__ == '__main__':

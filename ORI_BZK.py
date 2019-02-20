@@ -6,6 +6,7 @@ from wordcloud import WordCloud
 from io import BytesIO
 import base64
 
+
 def have_internet():
     conn = httplib.HTTPConnection("www.google.com", timeout=1)
     try:
@@ -17,20 +18,29 @@ def have_internet():
         return False
 
 
-def getbrokenstring(inputstr,value=68):
-    if len(inputstr)<value:
+def getbrokenstring(inputstr, value=68):
+    if len(inputstr) < value:
         return inputstr
-    letter=inputstr[value]
+    letter = inputstr[value]
     while letter != ' ':
-        value-=1
-        letter=inputstr[value]
+        value -= 1
+        letter = inputstr[value]
     return inputstr[:value]+'<br>'+getbrokenstring(inputstr[value:])
 
 
+def findvalue(dictio, key):
+    """Check if given item exists in given dictionary."""
+    try:
+        a = dictio[key]
+    except:
+        return 0
+    return a
+
+
 class ORIDC:
-    def __init__(self, mainfile,subfile):
+    def __init__(self, mainfile, subfile):
         self.maindata = pd.read_json(mainfile, orient='records')
-        self.maindata = self.maindata.loc[self.maindata['date']>='2016-01-01']
+        self.maindata = self.maindata.loc[self.maindata['date'] >= '2016-01-01']
         self.adddata = pd.read_json(subfile, orient='records')
         self.mainresult = pd.DataFrame(columns=self.maindata.columns)
         self.mcresult = pd.DataFrame(columns=self.adddata.columns)
@@ -40,11 +50,10 @@ class ORIDC:
     def printcols(self):
         print(self.maindata.columns)
 
-
     def filter(self):
         tm = time.time()
         self.searchmatrix()
-        if self.searchword == '' :
+        if self.searchword == '':
             self.mainresult = pd.DataFrame(columns=self.maindata.columns)
             self.mcresult = pd.DataFrame(columns=self.adddata.columns)
             self.openresult = pd.DataFrame(columns=self.adddata.columns)
@@ -54,11 +63,11 @@ class ORIDC:
             self.mainresult = self.mainresult.sort_values(by=['count'], ascending=False)
             self.mainresult = self.mainresult[(self.mainresult['count'] > 0)]
             self.mcresult = pd.DataFrame(self.adddata)
+            self.openresult = pd.DataFrame(self.adddata)
             self.mcresult['count'] = self.count_words(sourcedict=self.mcresult, countfield='summary')
             self.mcresult = self.mcresult.sort_values(by=['count'], ascending=False)
             self.mcresult = self.mcresult[(self.mcresult['count'] > 0)]
-            self.openresult = pd.DataFrame(self.adddata)
-            self.openresult['count'] = self.count_words(sourcedict=self.openresult, countfield='document')
+            self.openresult['count'] = self.count_words_lists(sourcedict=self.openresult, countfield='wordcounter')
             self.openresult = self.openresult.sort_values(by=['count'], ascending=False)
             self.openresult = self.openresult[(self.openresult['count'] > 0)]
         print(time.time()-tm)
@@ -77,6 +86,12 @@ class ORIDC:
         temp = pd.Series(np.zeros((len(sourcedict[countfield]))))
         for term in self.searchword:
             temp += sourcedict[countfield].str.count(term)
+        return temp
+
+    def count_words_lists(self, sourcedict, countfield):
+        temp = pd.Series(np.zeros((len(sourcedict[countfield]))))
+        for term in self.searchword:
+            temp = self.adddata.loc[:, countfield].apply(lambda x: findvalue(dictio=x, key=term))
         return temp
 
     def create_wcimage(self, counter):

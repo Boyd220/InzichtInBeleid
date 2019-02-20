@@ -65,16 +65,17 @@ for source in sources:
     if source[1] == 'enquette':
         result = []
         for col in range(2, columns):
-            question = ws.cell(row=2, column=col).value
-            questype = ws.cell(row=3, column=col).value
+            question = ws.cell(row=2, column=col).value.lower()
+            questype = ws.cell(row=3, column=col).value.lower()
             subresult = []
             for row in range(4, rows):
                 cellvalue = ws.cell(row=row, column=col).value
                 if cellvalue == 0 or cellvalue is None:
-                    cellvalue = 'niet aangevinkt'
-                subresult.append(cellvalue.strip())
+                    if questype == 'meerkeuze':
+                        cellvalue = 'niet aangevinkt'
+                        subresult.append(cellvalue.lower().strip())
             if questype == 'meerkeuze':
-                subresult = Counter(subresult)
+                subresult = [Counter(subresult)]
                 wordcount = ''
             elif questype == 'open':
                 wordcount = getwordcount(subresult)
@@ -84,13 +85,13 @@ for source in sources:
     elif source[1] == 'open vragen':
         result = []
         for row in range(2, rows):
-            question = ws.cell(row=row, column=1).value
+            question = ws.cell(row=row, column=1).value.lower()
             questype = 'open'
             subresult = []
-            for col in range(4, columns):
+            for col in range(2, columns):
                 cellvalue = ws.cell(row=row, column=col).value
                 if cellvalue is not None and cellvalue != 0 and cellvalue != '':
-                    subresult.append(cellvalue)
+                    subresult.append(cellvalue.lower())
             wordcount = getwordcount(subresult)
             subresult = [question, questype, subresult, row-1, wordcount]
             result.append(subresult)
@@ -100,7 +101,7 @@ for source in sources:
         question = 'Verzamelde teksten'
         questype = 'open'
         for row in range(2, rows):
-            subresult.append(ws.cell(row=row, column=1).value)
+            subresult.append(ws.cell(row=row, column=1).value.lower())
         wordcount = getwordcount(subresult)
         result = [[question, questype, subresult, 1, wordcount]]
 
