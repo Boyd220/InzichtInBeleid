@@ -74,6 +74,10 @@ for source in sources:
                     if questype == 'meerkeuze':
                         cellvalue = 'niet aangevinkt'
                         subresult.append(cellvalue.lower().strip())
+                elif type(cellvalue) == str:
+                    subresult.append(cellvalue.lower().strip())
+                else:
+                    subresult.append(cellvalue)
             if questype == 'meerkeuze':
                 subresult = [Counter(subresult)]
                 wordcount = ''
@@ -116,7 +120,6 @@ for source in sources:
                             'sourcetype': source[1],
                             'questype': row[1],
                             'wordcounter': row[4]})
-
 # save data
 with open("xtra_data.json", "w") as f:
     json.dump(totalresult, f)
