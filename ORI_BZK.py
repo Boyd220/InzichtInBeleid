@@ -3,6 +3,7 @@ import numpy as np
 import time
 import http.client as httplib
 from wordcloud import WordCloud
+import dash_html_components as html
 from io import BytesIO
 import base64
 
@@ -97,10 +98,13 @@ class ORIDC:
     def create_wcimage(self, counter):
         wc_img = WordCloud(
             background_color="white",
-            width=700,
-            height=500,
+            # width=700,
+            # height=500,
+            width=500,
+            height=350,
             colormap="Dark2",
-            max_words=10
+            # max_words=50,
+            max_font_size=30
         ).generate_from_frequencies(
             frequencies=counter
         ).to_image()
@@ -113,3 +117,32 @@ class ORIDC:
         encoded_image = base64.b64encode(data)
         # return the image for rendering
         return 'data:image/png;base64,{}'.format(encoded_image.decode())
+
+
+    def createcoldiv(self, colwidth, coldata, rownum, colnum):
+        return html.Div(
+            className=colwidth,
+            children=[
+                html.Div(
+                    id='tab4div' + str(rownum) + '_' + str(colnum),
+                    style={
+                        'display': 'inline-block'
+                    },
+                    children=coldata
+                )
+            ]
+        )
+
+
+    def createrowdiv(self, colwidhts, coldata, rownum):
+        assert len(colwidhts) == len(coldata)
+        childlist = []
+        for i in range(len(coldata)):
+            childlist.append(self.createcoldiv(colwidth=colwidhts[i],
+                                          coldata=coldata[i],
+                                          rownum=rownum,
+                                          colnum=i+1))
+        return(html.Div(
+            className='row',
+            children=childlist)
+        )

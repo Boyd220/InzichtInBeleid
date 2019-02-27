@@ -6,7 +6,6 @@ import dash_table
 import pandas as pd
 from dash.dependencies import Output, Input, State
 
-
 # load data and filter for recent data
 datamodel = ORIDC('total.json', 'xtra_data.json')
 
@@ -18,8 +17,6 @@ def getvaluecounts(df, field):
 
 
 app = dash.Dash(__name__)
-
-
 app.title = 'Inzicht in beleid'
 
 app.layout = html.Div(
@@ -30,7 +27,6 @@ app.layout = html.Div(
             children=[
                 html.Img(
                     src='assets/newlogo.png',
-                    #src='data:image/png;base64,{}'.format(encoded_image),
                     width='175',
                     height='52',
                     style={
@@ -190,6 +186,7 @@ app.layout = html.Div(
                     )
                 ),
                 dcc.Tab(
+                    id='tab4',
                     label='Antwoordselectie',
                     value='tab-4',
                     children=[
@@ -250,6 +247,15 @@ app.layout = html.Div(
                             ]
                         )
                     ]
+                ),
+                dcc.Tab(
+                    id='tab5',
+                    label='Details',
+                    value='tab-5',
+                    children=[
+                            html.Div('Nothing to show yet..')
+                    ]
+                    # style={'display': 'none'}
                 )
             ]
         )
@@ -334,6 +340,7 @@ def update_openquestions(n_clicks, tabledata):
     resultdiv = []
     for item, row in datamodel.mcresult.iterrows():
         if row['questype'] == 'open':
+            #check if dictionary empty
             resultdiv.append(html.Div(str(row['summary'])))
             resultdiv.append(
                     html.Img(
@@ -400,17 +407,32 @@ def update_piegraphs(n_clicks, tabledata):
 
 
 @app.callback(
-    Output('newcontainer', 'children'),
+    Output('tab4', 'children'),
     [Input('button', 'n_clicks'),
      Input('table', 'data')])
 def update_tab4(n_clicks, tabledata):
     tab4data = []
-    print(datamodel.searchword, 'lengte: ', len(datamodel.openresult))
     for index, row in datamodel.openresult.iterrows():
         if row['questype'] == 'open':
-            tab4data.append({'title': row['summary'], 'data': row['document']})
-    for item in tab4data:
-        print(item['title'])
+            tab4data.append({
+                'title': row['summary'],
+                'count': row['count'],
+                'data': row['wordcounter']}
+            )
+    tab4div = []
+    for i in range(len(tab4data)):
+        imagediv = html.Img(
+            id='tab4_image'+str(i),
+            src=datamodel.create_wcimage(tab4data[i]['data']),
+            style={
+                'vertical-align': 'top'
+            })
+        tab4div.append(datamodel.createrowdiv(
+            colwidhts=['four columns', 'two columns', 'six columns'],
+            coldata=[str(tab4data[i]['title']), str(tab4data[i]['count'])+' hits', imagediv],
+            rownum=i)
+        )
+    return tab4div
 
 
 if __name__ == '__main__':

@@ -1,18 +1,17 @@
-function ChangeNames(){
-var maximum = 5
+window.setInterval(function(){
+  var x = document.getElementById("wordcontainer").querySelectorAll("div");
+  var y = document.getElementById("piecontainer").querySelectorAll("div");
 
+for (i = 0; i < x.length; i++) {
+	if (i >0){
+         x[i].style.borderTop = "1px solid black";
+	}
+  x[i].style.fontWeight  = "bold";
+  x[i].style.fontSize  = "25px";
 
-        var a = document.getElementsByClassName('dash-header');
-        console.log(a);
-        for (var i = 1; i < maximum; i++) {
-            console.log(a[i]);
-        }
-
-        Array.prototype.forEach.call(a, function(el) {
-            // Do stuff here
-            console.log(el);
-        });
-
+  y[i].style.fontWeight  = "bold";
+  y[i].style.fontSize  = "25px";
+  y[i].style.marginLeft  = "13px";
 }
 
-ChangeNames();
+}, 1000);
