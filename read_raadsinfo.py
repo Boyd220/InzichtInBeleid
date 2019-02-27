@@ -21,7 +21,8 @@ for i in tqdm.tqdm(range(len(filenames))):
             result += line[0] + ' ' + line[1] + ' '
         summary = filename[9:filename.find('.docx')]
         totalresult.append({'author': 'Raad Bronckhorst',
-            'date': filedate,
+            #'date': filedate,
+            'date': datetime.date(datetime.strptime(filedate, '%d-%m-%Y')).strftime('%d-%m-%Y'),
             'document': result,
             'id': filename,
             'masterID': filename,
@@ -74,4 +75,4 @@ pb.close()
 
 #save data
 with open("total.json", "w") as f:
-    json.dump(total_data, f)
+    json.dump(totalresult, f)
