@@ -341,7 +341,12 @@ def update_openquestions(n_clicks, tabledata):
     for item, row in datamodel.mcresult.iterrows():
         if row['questype'] == 'open':
             #check if dictionary empty
-            resultdiv.append(html.Div(str(row['summary'])))
+            resultdiv.append(html.Div(str(row['summary']), 
+            style={
+                'font-weight': 'bold',
+                'font-size': '25px'
+            }
+            ))
             resultdiv.append(
                     html.Img(
                         id=item,
@@ -374,7 +379,12 @@ def update_piegraphs(n_clicks, tabledata):
             for key, value in graphdata[i]['data'].items():
                 values.append(value)
                 labels.append(key)
-            graphs.append(html.Div(str(graphdata[i]['title'])))
+            graphs.append(html.Div(str(graphdata[i]['title']), style={
+                'font-weight': 'bold',
+                'font-size': '25px',
+                'margin-left': '30px'
+            },
+            className = 'Pietitles'))
             graphs.append(dcc.Graph(
                 id='piegram-{}'.format(i),
                 figure={
