@@ -389,9 +389,9 @@ def update_piegraphs(n_clicks, tabledata):
                 id='piegram-{}'.format(i),
                 figure={
                     'data': [{
-                        'values': values,
-                        'labels': labels,
-                        'type': 'pie'
+                        'x': labels,
+                        'y': values,
+                        'type': 'bar'
                     }],
                     'layout': {
                         'title': ''

@@ -1,6 +1,6 @@
 var once = false;
 window.setInterval(function(){
-  if(document.getElementById("piecontainer") != null){
+  if(document.getElementById("piecontainer") != null && document.getElementById("piecontainer").querySelectorAll(".Pietitles").length > 0){
       var y = document.getElementById("piecontainer").querySelectorAll(".Pietitles");
 
     for (i = 0; i < y.length; i++) {
