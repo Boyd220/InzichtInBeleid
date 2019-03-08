@@ -74,7 +74,18 @@ def create_tabs(rowrange=10):
             # tab3(),
             create_tab('Vraagselectie', 'tab-3', create_questionstab(rows=rowrange)),
             create_tab('Antwoordselectie', 'tab-4', create_answersstab(rows=rowrange)),
-            create_tab('Details', 'tab-5', '')
+            create_tab('Details', 'tab-5', html.Div([
+                html.Div(
+                    id='detailtile',
+                    children=[],
+                    style={
+                        'font-weight': 'bold'
+                    }
+                ),
+                create_datatable(
+                    tableid='detailtable',
+                    columnnames=['Answers']),
+                html.Div()]))
         ]
     )
 
@@ -89,7 +100,7 @@ def create_tab(label, value, children):
 def create_answersstab(rows):
     divrows = []
     tabnumber = 4
-    for rownumber in range(1, rows+1):
+    for rownumber in range(0, rows):
         divrows.append(
             html.Div(
                 [
@@ -162,7 +173,8 @@ def create_butcol(tabnum, rownum, colnum, display='inline-block', buttext='quest
                             'margin-top': '1.3em',
                             'white-space': 'normal',
                             'display': display
-                        }
+                        },
+                        n_clicks_timestamp=0
                     )
 
 
@@ -201,7 +213,8 @@ def create_cloudcol(tabnum, rownum, colnum, display='inline-block', imgdata='', 
                     'margin-top': '1.3em',
                     'white-space': 'normal',
                     'display': display
-                }
+                },
+                n_clicks_timestamp=0
             )
         )
     resultdiv.append(
@@ -220,7 +233,7 @@ def create_cloudcol(tabnum, rownum, colnum, display='inline-block', imgdata='', 
 def create_questionstab(rows):
     divrows = []
     tabnumber = 3
-    for rownumber in range(1, rows+1):
+    for rownumber in range(0, rows):
         divrows.append(
             html.Div(
                 [
@@ -265,72 +278,6 @@ def tab5():
     )
 
 
-def tab4():
-    dcc.Tab(
-        id='tab4',
-        label='Antwoordselectie',
-        value='tab-4',
-        children=[
-            html.Div(
-                className='row',
-                children=[
-                    html.Div(
-                        className='six columns',
-                        children=[
-                            html.Div(
-                                id='newcontainer',
-                                style={
-                                    'display': 'inline-block'
-                                }
-                            )
-                        ]
-                    ),
-                    html.Div(
-                        className='six columns',
-                        children=[
-                            html.Div(
-                                id='newcontainer2',
-                                style={
-                                    'display': 'inline-block'
-                                },
-                                children='testing'
-                            )
-                        ]
-                    )
-                ]
-            ),
-            html.Div(
-                className='row',
-                children=[
-                    html.Div(
-                        className='six columns',
-                        children=[
-                            html.Div(
-                                id='newcontainer3',
-                                style={
-                                    'display': 'inline-block'
-                                }
-                            )
-                        ]
-                    ),
-                    html.Div(
-                        className='six columns',
-                        children=[
-                            html.Div(
-                                id='newcontainer4',
-                                style={
-                                    'display': 'inline-block'
-                                },
-                                children='testing'
-                            )
-                        ]
-                    )
-                ]
-            )
-        ]
-    )
-
-
 def create_graphtab():
     return html.Div(
         children=[
@@ -356,7 +303,42 @@ def create_graphtab():
 
 
 def create_tabletab():
-    return html.Div(children=[create_textbox(), create_datatable()])
+    return html.Div(
+        children=[
+            create_textbox(),
+            html.Div(
+                create_datatable(
+                    tableid='table',
+                    columnnames=tableheader,
+                    row_selectable='single',
+                    style_table={
+                        'maxHeight': '300',
+                        'overflowY': 'scroll'
+                    },
+                    tablecss=[{
+                        'selector': '.dash-cell div.dash-cell-value',
+                        'rule': 'display: inline; white-space: inherit; overflow: inherit; text-overflow: inherit;'
+                    }],
+                    condstyle=[
+                        {'if': {'column_id': 'author'},
+                         'width': '100px'},
+                        {'if': {'column_id': 'summary'},
+                         'width': '400px'},
+                    ],
+                    style={
+                        'minWidth': '30px', 'maxWidth': '500px',
+                        'whiteSpace': 'no-wrap',
+                        'overflow': 'hidden',
+                        'textOverflow': 'ellipsis',
+                    }
+                ),
+                style={
+                    'width': '60%',
+                    'display': 'inline-block',
+                    'vertical-align': 'top'
+                })
+        ]
+    )
 
 
 def create_textbox(text=''):
@@ -374,117 +356,17 @@ def create_textbox(text=''):
     )
 
 
-def create_datatable():
+def create_datatable(tableid, columnnames, row_selectable=None, style_table={}, tablecss=[], condstyle=[], style={}):
     divinput = dash_table.DataTable(
-        id='table',
-        columns=[{"name": i, "id": i} for i in tableheader],
+        id=tableid,
+        columns=[{"name": i, "id": i} for i in columnnames],
         data=[],
-        # data=df.to_dict("rows"),
-        row_selectable='single',
+        row_selectable=row_selectable,
         n_fixed_rows=1,
         selected_rows=[],
-        style_table={
-            'maxHeight': '300',
-            'overflowY': 'scroll'
-        },
-        style_cell={
-            'minWidth': '30px', 'maxWidth': '500px',
-            'whiteSpace': 'no-wrap',
-            'overflow': 'hidden',
-            'textOverflow': 'ellipsis',
-        },
-        css=[{
-            'selector': '.dash-cell div.dash-cell-value',
-            'rule': 'display: inline; white-space: inherit; overflow: inherit; text-overflow: inherit;'
-        }],
-        style_cell_conditional=[
-            {'if': {'column_id': 'author'},
-             'width': '100px'},
-            {'if': {'column_id': 'summary'},
-             'width': '400px'},
-        ]
+        style_table=style_table,
+        style_cell=style,
+        css=tablecss,
+        style_cell_conditional=condstyle
     )
-    return html.Div(
-        divinput,
-        style={
-            'width': '60%',
-            'display': 'inline-block',
-            'vertical-align': 'top'
-        })
-
-
-# Not used
-def createcoldiv(colwidth, coldata, tabnum, rownum, colnum):
-    tempdiv = []
-    if type(coldata) == list:
-        tempdiv.append(
-            html.Button(
-                'Button',
-                id='button-'+str(tabnum)+str(rownum)+str(colnum),
-                style={
-                    "color": "white",
-                    "margin-top": "1.3em"
-                }
-            )
-        )
-        if coldata[1] == 'Graph':
-            tempdiv.append(
-                dcc.Graph(
-                    id='piegram-'+str(tabnum)+str(rownum)+str(colnum),
-                    figure={
-                        'data': []
-                    }
-                )
-            )
-        elif coldata[1] == 'Img':
-            tempdiv.append(
-                html.Img(
-                    id='Img-'+str(tabnum)+str(rownum)+str(colnum),
-                    src='',
-                    style={
-                        'vertical-align': 'top'
-                    }
-                )
-            )
-        return html.Div(
-            className=colwidth,
-            children=tempdiv
-        )
-    else:
-        return html.Div(
-            className=colwidth,
-            children=[
-                html.Div(
-                    id='tab'+str(tabnum)+'div' + str(rownum) + str(colnum),
-                    style={
-                        'display': 'inline-block'
-                    },
-                    children=coldata
-                )
-            ]
-        )
-
-
-# Not used
-def createrowdiv(colwidhts, coldata, tabnum, rownum, hidden=False):
-    assert len(colwidhts) == len(coldata)
-    childlist = []
-    for i in range(len(coldata)):
-        childlist.append(createcoldiv(colwidth=colwidhts[i],
-                                      coldata=coldata[i],
-                                      tabnum=tabnum,
-                                      rownum=rownum,
-                                      colnum=i+1))
-    if hidden is True:
-        style = {
-            'display': 'None'
-        }
-    else:
-        style = {
-            'display': 'inline-block'
-        }
-    return(html.Div(
-        className='row',
-        children=childlist,
-        style=style)
-    )
+    return divinput

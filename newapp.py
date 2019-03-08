@@ -148,32 +148,115 @@ def callback_openanswercloud(i):
     return update_cloud
 
 
+def callback_getdetails():
+    def get_detailtable(*args):
+        answer = False
+        if max(args) > 0:
+            maxpos = args.index(max(args))
+            if maxpos >= len(args)/2:
+                maxpos = int(maxpos - len(args)/2)
+                answer = True
+            if answer is False:
+                df = pd.DataFrame({'Answers': datamodel.openquestion[maxpos]['source']})
+                return df.to_dict("rows")
+            df = pd.DataFrame({'Answers': datamodel.openanswer[maxpos]['source']})
+            return df.to_dict("rows")
+    return get_detailtable
+
+
+def callback_getdetailtitle():
+    def get_detailtitle(*args):
+        answer = False
+        if max(args) > 0:
+            maxpos = args.index(max(args))
+            if maxpos >= len(args)/2:
+                maxpos = int(maxpos - len(args)/2)
+                answer = True
+            if answer is False:
+                return str(datamodel.openquestion[maxpos]['title'])
+            return str(datamodel.openanswer[maxpos]['title'])
+    return get_detailtitle
+
+
+def callback_switchtab():
+    def switchtab(*args):
+        if max(args) > 0:
+            print('switch')
+            return 'tab-5'
+    return switchtab
+
+
 for i in range(0, rowrange):
     app.callback(
-        Output('piecontainer3'+str(i+1), 'children'),
+        Output('piecontainer3'+str(i), 'children'),
         [Input('button', 'n_clicks'),
          Input('table', 'data')]
     )(callback_closedquestion(i))
     app.callback(
-        Output('wordcontainer3'+str(i+1), 'children'),
+        Output('wordcontainer3'+str(i), 'children'),
         [Input('button', 'n_clicks'),
          Input('table', 'data')]
     )(callback_openquestion(i))
     app.callback(
-        Output('question-4'+str(i+1), 'children'),
+        Output('question-4'+str(i), 'children'),
         [Input('button', 'n_clicks'),
          Input('table', 'data')]
     )(callback_openanswerquestion(i))
     app.callback(
-        Output('count-4'+str(i+1), 'children'),
+        Output('count-4'+str(i), 'children'),
         [Input('button', 'n_clicks'),
          Input('table', 'data')]
     )(callback_openanswercount(i))
     app.callback(
-        Output('wordcloud-4'+str(i+1), 'children'),
+        Output('wordcloud-4'+str(i), 'children'),
         [Input('button', 'n_clicks'),
          Input('table', 'data')]
     )(callback_openanswercloud(i))
+
+input = []
+input2 = []
+for i in range(0, rowrange):
+    input.append(Input('button-3'+str(i)+'2', 'n_clicks_timestamp'))
+    input2.append(Input('button-4'+str(i)+'1', 'n_clicks_timestamp'))
+input.extend(input2)
+
+app.callback(
+    Output('detailtile', 'children'),
+    input
+)(callback_getdetailtitle())
+
+app.callback(
+    Output('detailtable', 'data'),
+    input
+)(callback_getdetails())
+
+app.callback(
+    Output('tabs', 'value'),
+    input
+)(callback_switchtab())
+
+if True is False:
+    for j in range(3, 5):
+        for i in range(0, rowrange):
+            app.callback(
+                Output('detailtable', 'data'),
+                [Input('button-'+str(j)+str(i)+'2', 'n_clicks'),
+                 Input('table', 'data')]
+            )(callback_getdetails(i))
+
+            app.callback(
+                Output('detailtile', 'children'),
+                [Input('button-'+str(j)+str(i)+'2', 'n_clicks'),
+                 Input('table', 'data')]
+            )(callback_getdetailtitle(i))
+        app.callback(
+            Output('button-3'+str(i)+'2', 'n_clicks'),
+            [Input('detailtile', 'children')]
+        )(())
+        app.callback(
+            Output('button-4'+str(i)+'1', 'n_clicks'),
+            [Input('detailtile', 'children')]
+        )(())
 
 
 @app.callback(
@@ -212,9 +295,10 @@ def update_scatter(data):
         }
 
 
-@app.callback(Output('textbox', 'children'),
-              [Input('table', 'selected_rows'),
-               Input('table', 'data')])
+@app.callback(
+    Output('textbox', 'children'),
+    [Input('table', 'selected_rows'),
+     Input('table', 'data')])
 def show_clicked_doc(selected_row_indices, rows):
     """Callback to retrieve the selected document and output to the textbox."""
     if selected_row_indices is None:

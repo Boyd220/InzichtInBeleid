@@ -70,18 +70,31 @@ class ORIDC:
 
             # filter open en closed question if searchword is in question
             tempdf = pd.DataFrame(self.adddata)
-            tempdf['count'] = self.count_words(sourcedict=tempdf, countfield='summary')
+            tempdf['count'] = self.count_words(
+                sourcedict=tempdf,
+                countfield='summary'
+            )
             tempdf = tempdf.sort_values(by=['count'], ascending=False)
             tempdf = tempdf[(tempdf['count'] > 0)]
             for index, row in tempdf.iterrows():
                 if row['questype'] == 'meerkeuze':
-                    self.closedquestion.append({'title': row['summary'], 'data': row['document'][0]})
+                    self.closedquestion.append({
+                        'title': row['summary'],
+                        'data': row['document'][0]
+                    })
                 elif row['questype'] == 'open':
-                    self.openquestion.append({'title': row['summary'], 'data': row['wordcounter']})
+                    self.openquestion.append({
+                        'title': row['summary'],
+                        'data': row['wordcounter'],
+                        'source': row['document']
+                    })
 
             # filter open question if searchword is in answers
             tempdf = pd.DataFrame(self.adddata)
-            tempdf['count'] = self.count_words_dicts(sourcedict=tempdf, countfield='wordcounter')
+            tempdf['count'] = self.count_words_dicts(
+                sourcedict=tempdf,
+                countfield='wordcounter'
+            )
             tempdf = tempdf.sort_values(by=['count'], ascending=False)
             tempdf = tempdf[(tempdf['count'] > 0)]
             for index, row in tempdf.iterrows():
@@ -89,7 +102,8 @@ class ORIDC:
                     self.openanswer.append({
                         'title': row['summary'],
                         'count': row['count'],
-                        'data': row['wordcounter']}
+                        'data': row['wordcounter'],
+                        'source': row['document']}
                     )
 
         print(time.time()-tm)
@@ -138,30 +152,3 @@ class ORIDC:
         encoded_image = base64.b64encode(data)
         # return the image for rendering
         return 'data:image/png;base64,{}'.format(encoded_image.decode())
-
-    def createcoldiv(self, colwidth, coldata, rownum, colnum):
-        return html.Div(
-            className=colwidth,
-            children=[
-                html.Div(
-                    id='tab4div' + str(rownum) + '_' + str(colnum),
-                    style={
-                        'display': 'inline-block'
-                    },
-                    children=coldata
-                )
-            ]
-        )
-
-    def createrowdiv(self, colwidhts, coldata, rownum):
-        assert len(colwidhts) == len(coldata)
-        childlist = []
-        for i in range(len(coldata)):
-            childlist.append(self.createcoldiv(colwidth=colwidhts[i],
-                                          coldata=coldata[i],
-                                          rownum=rownum,
-                                          colnum=i+1))
-        return(html.Div(
-            className='row',
-            children=childlist)
-        )
