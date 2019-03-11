@@ -183,6 +183,8 @@ def callback_switchtab():
         if max(args) > 0:
             print('switch')
             return 'tab-5'
+        else:
+            return 'tab-1'
     return switchtab
 
 
@@ -234,30 +236,6 @@ app.callback(
     Output('tabs', 'value'),
     input
 )(callback_switchtab())
-
-if True is False:
-    for j in range(3, 5):
-        for i in range(0, rowrange):
-            app.callback(
-                Output('detailtable', 'data'),
-                [Input('button-'+str(j)+str(i)+'2', 'n_clicks'),
-                 Input('table', 'data')]
-            )(callback_getdetails(i))
-
-            app.callback(
-                Output('detailtile', 'children'),
-                [Input('button-'+str(j)+str(i)+'2', 'n_clicks'),
-                 Input('table', 'data')]
-            )(callback_getdetailtitle(i))
-        app.callback(
-            Output('button-3'+str(i)+'2', 'n_clicks'),
-            [Input('detailtile', 'children')]
-        )(())
-        app.callback(
-            Output('button-4'+str(i)+'1', 'n_clicks'),
-            [Input('detailtile', 'children')]
-        )(())
-
 
 @app.callback(
     Output('table', 'data'),
@@ -323,6 +301,14 @@ def unclick(n_clicks):
     """" Callback to unclick items with new searchclick"""
     if n_clicks is not None:
         return []
+
+
+@app.callback(
+    Output('input-box', 'value'),
+    [Input('tabs', 'value')])
+def test(value):
+    """" Callback to unclick items with new searchclick"""
+    print(value)
 
 
 if __name__ == '__main__':

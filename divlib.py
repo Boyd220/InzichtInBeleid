@@ -74,18 +74,31 @@ def create_tabs(rowrange=10):
             # tab3(),
             create_tab('Vraagselectie', 'tab-3', create_questionstab(rows=rowrange)),
             create_tab('Antwoordselectie', 'tab-4', create_answersstab(rows=rowrange)),
-            create_tab('Details', 'tab-5', html.Div([
-                html.Div(
-                    id='detailtile',
-                    children=[],
-                    style={
-                        'font-weight': 'bold'
-                    }
-                ),
-                create_datatable(
-                    tableid='detailtable',
-                    columnnames=['Answers']),
-                html.Div()]))
+            create_tab('Details', 'tab-5',
+                       html.Div([
+                            html.Div(
+                                id='detailtile',
+                                children=[],
+                                style={
+                                    'font-weight': 'bold'
+                                }
+                            ),
+                            create_datatable(
+                                tableid='detailtable',
+                                columnnames=['Answers'],
+                                datastyle={
+                                    'whiteSpace': 'normal'
+                                },
+                                style={
+                                    'minWidth': '30px', 'maxWidth': '500px'
+                                },
+                                tablecss=[{
+                                    'selector': '.dash-cell div.dash-cell-value',
+                                    'rule': 'display: inline; white-space: inherit; overflow: inherit; text-overflow: inherit;'
+                                }]),
+                            html.Div()]
+                        )
+            )
         ]
     )
 
@@ -266,18 +279,6 @@ def create_questionstab(rows):
     return divrows
 
 
-def tab5():
-    dcc.Tab(
-        id='tab5',
-        label='Details',
-        value='tab-5',
-        children=[
-                html.Div('Nothing to show yet..')
-        ]
-        # style={'display': 'none'}
-    )
-
-
 def create_graphtab():
     return html.Div(
         children=[
@@ -356,7 +357,7 @@ def create_textbox(text=''):
     )
 
 
-def create_datatable(tableid, columnnames, row_selectable=None, style_table={}, tablecss=[], condstyle=[], style={}):
+def create_datatable(tableid, columnnames, row_selectable=None, style_table={}, datastyle={}, tablecss=[], condstyle=[], style={}):
     divinput = dash_table.DataTable(
         id=tableid,
         columns=[{"name": i, "id": i} for i in columnnames],
@@ -366,6 +367,7 @@ def create_datatable(tableid, columnnames, row_selectable=None, style_table={}, 
         selected_rows=[],
         style_table=style_table,
         style_cell=style,
+        style_data=datastyle,
         css=tablecss,
         style_cell_conditional=condstyle
     )
