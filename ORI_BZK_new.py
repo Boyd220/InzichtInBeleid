@@ -48,6 +48,8 @@ class ORIDC:
         self.openquestion = []
         self.openanswer = []
         self.searchword = ''
+        self.shownum3 = 0
+        self.shownum4 = 0
 
     def printcols(self):
         print(self.maindata.columns)
@@ -55,6 +57,8 @@ class ORIDC:
     def filter(self):
         tm = time.time()
         self.searchmatrix()
+        self.shownum3 = 0
+        self.shownum4 = 0
         if self.searchword == '':
             # reset results
             self.mainresult = pd.DataFrame(columns=self.maindata.columns)

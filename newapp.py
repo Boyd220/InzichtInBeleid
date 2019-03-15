@@ -36,11 +36,12 @@ app.layout = html.Div(
 
 
 def callback_closedquestion(i):
-    def update_piegram(n_clicks, data):
-        if len(datamodel.closedquestion) > i:
+    def update_piegram(n_clicks, data, next_clicks):
+        newindex = i + datamodel.shownum3
+        if len(datamodel.closedquestion) > newindex:
             values = []
             labels = []
-            for key, value in datamodel.closedquestion[i]['data'].items():
+            for key, value in datamodel.closedquestion[newindex]['data'].items():
                 values.append(value)
                 labels.append(key)
             figure = {
@@ -57,7 +58,7 @@ def callback_closedquestion(i):
                     tabnum=3,
                     rownum=i,
                     colnum=1,
-                    buttext=datamodel.closedquestion[i]['title'],
+                    buttext=datamodel.closedquestion[newindex]['title'],
                     figdata=figure
                 )
         else:
@@ -71,14 +72,15 @@ def callback_closedquestion(i):
 
 
 def callback_openquestion(i):
-    def update_wordcloud(n_clicks, data):
-        if len(datamodel.openquestion) > i:
-            image = datamodel.create_wcimage(datamodel.openquestion[i]['data'])
+    def update_wordcloud(n_clicks, data, next_clicks):
+        newindex = i + datamodel.shownum3
+        if len(datamodel.openquestion) > newindex:
+            image = datamodel.create_wcimage(datamodel.openquestion[newindex]['data'])
             return divlib.create_cloudcol(
                     tabnum=3,
                     rownum=i,
                     colnum=2,
-                    buttext=datamodel.openquestion[i]['title'],
+                    buttext=datamodel.openquestion[newindex]['title'],
                     imgdata=image
                 )
         else:
@@ -92,13 +94,14 @@ def callback_openquestion(i):
 
 
 def callback_openanswerquestion(i):
-    def update_question(n_clicks, data):
-        if len(datamodel.openanswer) > i:
+    def update_question(n_clicks, data, next_clicks):
+        newindex = i + datamodel.shownum4
+        if len(datamodel.openanswer) > newindex:
             return divlib.create_butcol(
                 tabnum=4,
                 rownum=i,
                 colnum=1,
-                buttext=datamodel.openanswer[i]['title']
+                buttext=datamodel.openanswer[newindex]['title']
             )
         else:
             return divlib.create_butcol(
@@ -110,13 +113,14 @@ def callback_openanswerquestion(i):
 
 
 def callback_openanswercount(i):
-    def update_count(n_clicks, data):
-        if len(datamodel.openanswer) > i:
+    def update_count(n_clicks, data, next_clicks):
+        newindex = i + datamodel.shownum4
+        if len(datamodel.openanswer) > newindex:
             return divlib.create_labcol(
                 tabnum=4,
                 rownum=i,
                 colnum=2,
-                labtext=str(int(datamodel.openanswer[i]['count']))+' hits'
+                labtext=str(int(datamodel.openanswer[newindex]['count']))+' hits'
             )
         else:
             return divlib.create_labcol(
@@ -128,9 +132,10 @@ def callback_openanswercount(i):
 
 
 def callback_openanswercloud(i):
-    def update_cloud(n_clicks, data):
-        if len(datamodel.openanswer) > i:
-            image = datamodel.create_wcimage(datamodel.openanswer[i]['data'])
+    def update_cloud(n_clicks, data, next_clicks):
+        newindex = i + datamodel.shownum4
+        if len(datamodel.openanswer) > newindex:
+            image = datamodel.create_wcimage(datamodel.openanswer[newindex]['data'])
             return divlib.create_cloudcol(
                 tabnum=4,
                 rownum=i,
@@ -157,9 +162,11 @@ def callback_getdetails():
                 maxpos = int(maxpos - len(args)/2)
                 answer = True
             if answer is False:
-                df = pd.DataFrame({'Answers': datamodel.openquestion[maxpos]['source']})
+                newindex = maxpos + datamodel.shownum3
+                df = pd.DataFrame({'Answers': datamodel.openquestion[newindex]['source']})
                 return df.to_dict("rows")
-            df = pd.DataFrame({'Answers': datamodel.openanswer[maxpos]['source']})
+            newindex = maxpos + datamodel.shownum4
+            df = pd.DataFrame({'Answers': datamodel.openanswer[newindex]['source']})
             return df.to_dict("rows")
     return get_detailtable
 
@@ -173,8 +180,10 @@ def callback_getdetailtitle():
                 maxpos = int(maxpos - len(args)/2)
                 answer = True
             if answer is False:
-                return str(datamodel.openquestion[maxpos]['title'])
-            return str(datamodel.openanswer[maxpos]['title'])
+                newindex = maxpos + datamodel.shownum3
+                return str(datamodel.openquestion[newindex]['title'])
+            newindex = maxpos + datamodel.shownum4
+            return str(datamodel.openanswer[newindex]['title'])
     return get_detailtitle
 
 
@@ -192,27 +201,32 @@ for i in range(0, rowrange):
     app.callback(
         Output('piecontainer3'+str(i), 'children'),
         [Input('button', 'n_clicks'),
-         Input('table', 'data')]
+         Input('table', 'data'),
+         Input('next3', 'n_clicks')]
     )(callback_closedquestion(i))
     app.callback(
         Output('wordcontainer3'+str(i), 'children'),
         [Input('button', 'n_clicks'),
-         Input('table', 'data')]
+         Input('table', 'data'),
+         Input('next3', 'n_clicks')]
     )(callback_openquestion(i))
     app.callback(
         Output('question-4'+str(i), 'children'),
         [Input('button', 'n_clicks'),
-         Input('table', 'data')]
+         Input('table', 'data'),
+         Input('next4', 'n_clicks')]
     )(callback_openanswerquestion(i))
     app.callback(
         Output('count-4'+str(i), 'children'),
         [Input('button', 'n_clicks'),
-         Input('table', 'data')]
+         Input('table', 'data'),
+         Input('next4', 'n_clicks')]
     )(callback_openanswercount(i))
     app.callback(
         Output('wordcloud-4'+str(i), 'children'),
         [Input('button', 'n_clicks'),
-         Input('table', 'data')]
+         Input('table', 'data'),
+         Input('next4', 'n_clicks')]
     )(callback_openanswercloud(i))
 
 input = []
@@ -236,6 +250,7 @@ app.callback(
     Output('tabs', 'value'),
     input
 )(callback_switchtab())
+
 
 @app.callback(
     Output('table', 'data'),
@@ -309,6 +324,51 @@ def unclick(n_clicks):
 def test(value):
     """" Callback to unclick items with new searchclick"""
     print(value)
+
+
+@app.callback(
+    Output('div-4', 'children'),
+    [Input('next4', 'n_clicks')])
+def show_next_4(value):
+    """" Callback to unclick items with new searchclick"""
+    if value is not None:
+        datamodel.shownum4 += 10
+
+
+@app.callback(
+    Output('div-3', 'children'),
+    [Input('next3', 'n_clicks')])
+def show_next_3(value):
+    """" Callback to unclick items with new searchclick"""
+    if value is not None:
+        datamodel.shownum3 += 10
+
+
+@app.callback(
+    Output('next3', 'style'),
+    [Input('button', 'n_clicks'),
+     Input('next3', 'n_clicks'),
+     Input('table', 'data')])
+def hide_next3(clicks1, clicks2, data):
+    """" Callback to unclick items with new searchclick"""
+    maxlen = max(len(datamodel.openquestion), len(datamodel.closedquestion))
+    if maxlen > datamodel.shownum3 + 10:
+        return {'display': 'inline-block'}
+    else:
+        return {'display': 'None'}
+
+
+@app.callback(
+    Output('next4', 'style'),
+    [Input('button', 'n_clicks'),
+     Input('next4', 'n_clicks'),
+     Input('table', 'data')])
+def hide_next4(clicks1, clicks2, data):
+    """" Callback to unclick items with new searchclick"""
+    if len(datamodel.openanswer) > datamodel.shownum4 + 10:
+        return {'display': 'inline-block'}
+    else:
+        return {'display': 'None'}
 
 
 if __name__ == '__main__':

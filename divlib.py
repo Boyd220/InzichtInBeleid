@@ -148,6 +148,14 @@ def create_answersstab(rows):
                 className='row'
             )
         )
+    divrows.append(html.Button(
+        'Zie volgende resultaten',
+        id='next' + str(tabnumber),
+        style={'display': 'None'}
+    ))
+    divrows.append(html.Div(
+        id='div-' + str(tabnumber)
+    ))
     return divrows
 
 
@@ -276,6 +284,14 @@ def create_questionstab(rows):
                 }
             )
         )
+    divrows.append(html.Button(
+        'Zie volgende resultaten',
+        id='next' + str(tabnumber),
+        style={'display': 'None'}
+    ))
+    divrows.append(html.Div(
+        id='div-' + str(tabnumber)
+    ))
     return divrows
 
 
