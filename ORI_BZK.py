@@ -126,7 +126,10 @@ class ORIDC:
                 html.Div(
                     id='tab4div' + str(rownum) + '_' + str(colnum),
                     style={
-                        'display': 'inline-block'
+                        'display': 'inline-block',
+                        'margin-left': '2em',
+                        'font-weight': 'bold',
+                        'font-size':'25px'
                     },
                     children=coldata
                 )

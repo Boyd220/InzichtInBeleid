@@ -435,7 +435,9 @@ def update_tab4(n_clicks, tabledata):
             id='tab4_image'+str(i),
             src=datamodel.create_wcimage(tab4data[i]['data']),
             style={
-                'vertical-align': 'top'
+                'vertical-align': 'top',
+                'border-bottom': '1px solid black',
+                'margin-bottom': '1em'
             })
         tab4div.append(datamodel.createrowdiv(
             colwidhts=['four columns', 'two columns', 'six columns'],

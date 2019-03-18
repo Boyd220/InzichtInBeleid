@@ -124,7 +124,7 @@ def create_answersstab(rows):
                             rownum=rownumber,
                             colnum=1,
                             display='None'),
-                        width='four columns'
+                        width='four columns',
                     ),
                     create_col(
                         colid='count-'+str(tabnumber)+str(rownumber),
