@@ -388,14 +388,14 @@ def update_piegraphs(n_clicks, tabledata):
             graphs.append(dcc.Graph(
                 id='piegram-{}'.format(i),
                 figure={
-                    'data': [{
-                        'x': labels,
-                        'y': values,
-                        'type': 'bar'
-                    }],
-                    'layout': {
-                        'title': ''
-                    }
+                'data': [{
+                    'values': values,
+                    'labels': labels,
+                    'type': 'pie'
+                }],
+                'layout': {
+                    'title': ''
+                }
                 }
             ))
     else:
