@@ -26,7 +26,7 @@ app.layout = html.Div(
             style={'background-color': 'white'},
             children=[
                 html.Img(
-                    src='assets/newlogo.png',
+                    src='assets/bzk-ssc_ict-vng-logo.png',
                     width='175',
                     height='52',
                     style={

@@ -11,9 +11,9 @@ def create_header():
         style={'background-color': 'white'},
         children=[
             html.Img(
-                src='assets/newlogo.png',
-                width='175',
-                height='52',
+                src='assets/bzk-ssc_ict-vng-logo.png',
+                width='375',
+                height='100',
                 style={
                     'margin': 'auto'
                 }
