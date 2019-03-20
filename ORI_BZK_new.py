@@ -44,6 +44,7 @@ class ORIDC:
         self.maindata = self.maindata.loc[self.maindata['date'] >= '2016-01-01']
         self.adddata = pd.read_json(subfile, orient='records')
         self.mainresult = pd.DataFrame(columns=self.maindata.columns)
+        self.tableheader = ['author', 'date', 'place', 'summary']
         self.closedquestion = []
         self.openquestion = []
         self.openanswer = []

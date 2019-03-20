@@ -3,12 +3,13 @@ import divlib
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import dash_table
 import pandas as pd
 from dash.dependencies import Output, Input, State
+import os
 
 # load data and filter for recent data
-datamodel = ORIDC('total.json', 'xtra_data.json')
+basePath = os.path.dirname(os.path.abspath(__file__))
+datamodel = ORIDC(basePath + '/total.json', basePath + '/xtra_data.json')
 rowrange = 10
 
 
@@ -132,7 +133,7 @@ def callback_openanswercount(i):
 
 
 def callback_openanswercloud(i):
-    def update_cloud(n_clicks, data, next_clicks):
+    def update_cloud(n_clicks, next_clicks):
         newindex = i + datamodel.shownum4
         if len(datamodel.openanswer) > newindex:
             image = datamodel.create_wcimage(datamodel.openanswer[newindex]['data'])
@@ -190,6 +191,10 @@ def callback_getdetailtitle():
 def callback_switchtab():
     def switchtab(*args):
         if max(args) > 0:
+            rowindex = args.index(max(args))
+            if rowindex > 9:
+                print(rowindex - 10)
+            #tabindex = args[args.index(max(args))][7:8]
             print('switch')
             return 'tab-5'
         else:
@@ -224,8 +229,9 @@ for i in range(0, rowrange):
     )(callback_openanswercount(i))
     app.callback(
         Output('wordcloud-4'+str(i), 'children'),
-        [Input('button', 'n_clicks'),
-         Input('table', 'data'),
+        #[Input('button', 'n_clicks'),
+         #Input('table', 'data'),
+        [Input('button-4'+str(i)+'1', 'n_clicks'),
          Input('next4', 'n_clicks')]
     )(callback_openanswercloud(i))
 
@@ -261,6 +267,9 @@ def update_dataoutput(n_clicks, searchvalue):
     datamodel.searchword = searchvalue
     datamodel.filter()
     table_data = datamodel.mainresult
+    cols = datamodel.tableheader
+    cols.append('id')
+    table_data = table_data.loc[:, table_data.columns.str.contains('|'.join(cols))]
     return table_data.to_dict("rows")
 
 
@@ -298,7 +307,9 @@ def show_clicked_doc(selected_row_indices, rows):
         value = 'Klik een document aan om hem door te lezen'
     elif len(selected_row_indices) == 1:
         row_idx = selected_row_indices[0]
-        text = rows[row_idx]['document']
+        row_id = rows[row_idx]['id']
+        text = datamodel.mainresult.loc[datamodel.mainresult['id'] == row_id]['document'].iloc[0]
+        #text = rows[row_idx]['document']
         for word in datamodel.searchword:
             text = text.replace(word, '**'+word+'**')
         text = text.replace('\n', '\n\n')

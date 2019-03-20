@@ -70,7 +70,7 @@ for source in sources:
             subresult = []
             for row in range(4, rows):
                 cellvalue = ws.cell(row=row, column=col).value
-                if cellvalue == 0 or cellvalue is None:
+                if cellvalue == 0 or cellvalue is None or cellvalue == '':
                     if questype == 'meerkeuze':
                         cellvalue = 'niet aangevinkt'
                         subresult.append(cellvalue.lower().strip())

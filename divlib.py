@@ -13,7 +13,7 @@ def create_header():
             html.Img(
                 src='assets/bzk-ssc_ict-vng-logo.png',
                 width='375',
-                height='100',
+                height='75',
                 style={
                     'margin': 'auto'
                 }
@@ -64,12 +64,12 @@ def create_navbar():
     )
 
 
-def create_tabs(rowrange=10):
+def create_tabs(rowrange=10, columnnames=['author', 'date', 'place', 'summary']):
     return dcc.Tabs(
         id="tabs",
         value='tab-1',
         children=[
-            create_tab('Tekst', 'tab-1', create_tabletab()),
+            create_tab('Tekst', 'tab-1', create_tabletab(columnnames=columnnames)),
             create_tab('Grafiek', 'tab-2', create_graphtab()),
             # tab3(),
             create_tab('Vraagselectie', 'tab-3', create_questionstab(rows=rowrange)),
@@ -319,14 +319,14 @@ def create_graphtab():
     )
 
 
-def create_tabletab():
+def create_tabletab(columnnames):
     return html.Div(
         children=[
             create_textbox(),
             html.Div(
                 create_datatable(
                     tableid='table',
-                    columnnames=tableheader,
+                    columnnames=columnnames,
                     row_selectable='single',
                     style_table={
                         'maxHeight': '300',
